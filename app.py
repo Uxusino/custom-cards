@@ -4,12 +4,10 @@ from flask import Flask
 from flask import render_template, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
-from dotenv import load_dotenv
 
 app = Flask(__name__)
-password = os.getenv('POSTGRESQL_PASS')
 app.secret_key = os.getenv("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://postgres:{password}@localhost:5432"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 db = SQLAlchemy(app)
 
 @app.route("/")
