@@ -6,7 +6,7 @@
 <a href="/users/{{session.username}}">My profile</a>
 <a href="/logout">Log out</a>
 {% else %}
-<form action="/login" method="post">
+<form action="/login" method="POST">
     Username: <input type="text" name="username">
     Password: <input type="password" name="password">
     <input type="submit" value="Sign in">
