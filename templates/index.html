@@ -1,12 +1,18 @@
 <h1>Custom Cards Against Humanity!</h1>
 <p>Have you ever played CAH and thought that the default cards are not enough? Maybe you played so much that you've grown bored of them or would like cards to be themed around your local jokes? 
     Maybe you want to go as extreme as you can? Either way, this platform allows you to create your very own packs and test them.</p>
+{% if session.username %}
+<h2>Welcome, {{session.username}}!</h2>
+<a href="/users/{{session.username}}">My profile</a>
+<a href="/logout">Log out</a>
+{% else %}
 <form action="/login" method="post">
     Username: <input type="text" name="username">
     Password: <input type="password" name="password">
     <input type="submit" value="Sign in">
 </form>
 <a href="/register">Sign up</a>
+{% endif %}
 <p>To be added in future:</p>
 <ol>
     <li>Proper sign up/sign in</li>

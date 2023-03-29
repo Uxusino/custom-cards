@@ -18,6 +18,18 @@ def index():
 def user(username):
     return render_template("profile.html", username=username)
 
+@app.route("/login", methods=["POST"])
+def login():
+    username = request.form["username"]
+    password = request.form["password"]
+    session["username"] = username
+    return redirect("/")
+
+@app.route("/logout")
+def logout():
+    del session["username"]
+    return redirect("/")
+
 @app.route("/register", methods = ["GET", "POST"])
 def register():
     if request.method == "POST":
