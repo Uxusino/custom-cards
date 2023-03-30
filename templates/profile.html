@@ -1,6 +1,10 @@
 {% if user %}
     <h1>{{ username }}'s profile</h1>
-    <h2>My packs:</h2>
+    {% if username == current_user %}
+        <h2>My packs:</h2>
+    {% else %}
+        <h2>{{ username }}'s packs</h2>
+    {% endif %}
     <i>It is empty here... packs don't exist in this world</i>
 {% else %}
     <h2>You are trying to access an unexisting user :(</h2>

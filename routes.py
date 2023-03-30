@@ -10,7 +10,7 @@ def index():
 @app.route("/users/<string:username>")
 def user(username):
     userid = users.get_userid(username)
-    return render_template("profile.html", username=username, user=userid)
+    return render_template("profile.html", username=username, user=userid, current_user=session["username"])
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -43,6 +43,7 @@ def register():
             flash(error_msg)
             return render_template("register.html")
         else:
+            session["username"] = username
             profile_url = "/users/" + username
             return redirect(profile_url)
     return render_template("register.html")

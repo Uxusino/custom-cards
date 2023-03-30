@@ -25,16 +25,22 @@ def login(username: str, password: str) -> tuple:
             return (True, None)
     return (False, "Invalid username or password.")
 
-### SQL commands to manage everything that has to do with users
-
 # Returns user id if user exists, None otherwise
-def get_userid(username: str):
+def get_userid(username: str) -> int:
     sql = text("SELECT id FROM users WHERE lower(username)=:username")
     res = db.session.execute(sql, {"username": username.lower()})
     id = res.fetchone()
     if not id:
         return None
     return id[0]
+
+def get_username(userid: int) -> str:
+    sql = text("SELECT username FROM users WHERE id=:id")
+    res = db.session.execute(sql, {"id": userid})
+    username = res.fetchone()
+    if not username:
+        return None
+    return username[0]
 
 def get_hashed_password(userid: int) -> str:
     sql = text("SELECT password FROM users WHERE id=:id")
