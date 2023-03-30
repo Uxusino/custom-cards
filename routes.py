@@ -9,14 +9,22 @@ def index():
 
 @app.route("/users/<string:username>")
 def user(username):
-    return render_template("profile.html", username=username)
+    userid = users.get_userid(username)
+    return render_template("profile.html", username=username, user=userid)
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    session["username"] = username
-    return redirect("/")
+    login = users.login(username, password)
+    success = login[0]
+    if not success:
+        error_msg = login[1]
+        flash(error_msg)
+        return redirect("/")
+    else:
+        session["username"] = username
+        return redirect("/")
 
 @app.route("/logout")
 def logout():

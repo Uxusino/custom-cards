@@ -8,7 +8,7 @@ def new_user(username: str, password: str) -> tuple:
     if not username or not password:
         return (False, "Please fill both fields.")
     # Check if this user already exists
-    if user_exists(username):
+    if get_userid(username):
         return (False, "This user already exists.")
     hash_value = generate_password_hash(password)
     sql = text("INSERT INTO users (username, password, is_admin) VALUES(:username, :password, false)")
@@ -16,10 +16,28 @@ def new_user(username: str, password: str) -> tuple:
     db.session.commit()
     return (True, None)
 
-def user_exists(username: str) -> bool:
-    sql = text("SELECT username FROM users WHERE lower(username)=:username")
+# Returns (True, None) if succesfull and (False, error: str) otherwise
+def login(username: str, password: str) -> tuple:
+    id = get_userid(username)
+    if id:
+        hash_value = get_hashed_password(id)
+        if check_password_hash(hash_value, password):
+            return (True, None)
+    return (False, "Invalid username or password.")
+
+### SQL commands to manage everything that has to do with users
+
+# Returns user id if user exists, None otherwise
+def get_userid(username: str):
+    sql = text("SELECT id FROM users WHERE lower(username)=:username")
     res = db.session.execute(sql, {"username": username.lower()})
-    user = res.fetchone()
-    if not user:
-        return False
-    return True
+    id = res.fetchone()
+    if not id:
+        return None
+    return id[0]
+
+def get_hashed_password(userid: int) -> str:
+    sql = text("SELECT password FROM users WHERE id=:id")
+    res = db.session.execute(sql, {"id": userid})
+    h_password = res.fetchone()[0]
+    return h_password

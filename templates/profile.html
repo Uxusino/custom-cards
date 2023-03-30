@@ -1,3 +1,8 @@
-<h1>{{ username }}'s profile</h1>
-<h2>My packs:</h2>
-<i>It is empty here... packs don't exist in this world</i>
+{% if user %}
+    <h1>{{ username }}'s profile</h1>
+    <h2>My packs:</h2>
+    <i>It is empty here... packs don't exist in this world</i>
+{% else %}
+    <h2>You are trying to access an unexisting user :(</h2>
+    <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
+{% endif %}
