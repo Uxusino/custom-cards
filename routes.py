@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, request, redirect, flash, session
 
 import users
+import packs
 
 @app.route("/")
 def index():
@@ -10,7 +11,8 @@ def index():
 @app.route("/users/<string:username>")
 def user(username):
     userid = users.get_userid(username)
-    return render_template("profile.html", username=username, user=userid, current_user=session["username"])
+    pack_list = packs.get_packs(userid)
+    return render_template("profile.html", username=username, user=userid, current_user=session["username"], packs=pack_list)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -47,6 +49,10 @@ def register():
             profile_url = "/users/" + username
             return redirect(profile_url)
     return render_template("register.html")
+
+@app.route("/create")
+def create():
+    return "Future page for creating packs"
 
 @app.route("/simulator")
 def simulator():

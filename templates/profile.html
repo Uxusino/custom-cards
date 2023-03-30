@@ -5,8 +5,26 @@
     {% else %}
         <h2>{{ username }}'s packs</h2>
     {% endif %}
-    <i>It is empty here... packs don't exist in this world</i>
+    {% if username == current_user %}
+        <a href="/create">New pack</a>
+        <br>
+    {% endif %}
+    {% if not packs %}
+        <i>It is empty here...</i>
+    {% else %}
+        {% for pack in packs %}
+            {% if username != current_user and pack['is_public'] is False %}
+                {# skip #}
+            {% else %}
+                <h3>{{ pack['name'] }}</h3>
+                <p>Language: {{ pack['language'] }}</p>
+                <p>Created at: {{ pack['created'] }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 {% else %}
     <h2>You are trying to access an unexisting user :(</h2>
     <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
 {% endif %}
+<br>
+<a href="/">Main page</a>
