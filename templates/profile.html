@@ -13,7 +13,7 @@
         <i>It is empty here...</i>
     {% else %}
         {% for pack in packs %}
-            {% if username != current_user and pack['is_public'] is False %}
+            {% if username != current_user and pack['is_public'] == False %}
                 {# skip #}
             {% else %}
                 <h3>{{ pack['name'] }}</h3>

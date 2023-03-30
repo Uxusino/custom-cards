@@ -1,4 +1,4 @@
-from app import app
+from app import app, languages
 from flask import render_template, request, redirect, flash, session
 
 import users
@@ -50,9 +50,32 @@ def register():
             return redirect(profile_url)
     return render_template("register.html")
 
-@app.route("/create")
+@app.route("/create", methods = ["GET", "POST"])
 def create():
-    return "Future page for creating packs"
+    if request.method == "POST":
+        userid = users.get_userid(session["username"])
+        name = request.form["name"]
+        language = request.form["language"]
+        is_public = request.form["publicity"]
+        if is_public == 1:
+            is_public = True
+        elif is_public == 0:
+            is_public = False
+        pack = packs.new_pack(userid, name, language, is_public)
+        success = pack[0]
+        if not success:
+            error_msg = pack[1]
+            flash(error_msg)
+            return render_template("create.html", languages=languages)
+        else:
+            pack_id = pack[1]
+            pack_url = "/packs/" + str(pack_id)
+            return redirect(pack_url)
+    return render_template("create.html", languages=languages)
+
+@app.route("/packs/<int:id>")
+def pack(id):
+    return f"This page will contain a pack with id {id}."
 
 @app.route("/simulator")
 def simulator():

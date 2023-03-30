@@ -4,11 +4,21 @@ from db import db
 
 import users
 
-# Returns True if successfull, False otherwise
-def new_pack(userid: int, name: str, language: str, is_public: bool) -> bool:
+# Returns (True, pack_id: int) if successfull, (False, error: str) otherwise
+def new_pack(userid: int, name: str, language: str, is_public: bool) -> tuple:
     created_at = datetime.now()
     if not userid:
-        return False
+        return (False, "You must be logged in to create packs.")
+    if name:
+        pack_exists = get_pack_id(userid, name)
+        if pack_exists:
+            return (False, "You already have a pack with the same name.")
+    else:
+        username = users.get_username(userid)
+        count = count_packs(userid) + 1
+        name = f"{username}'s Pack №{count}"
+    if not language:
+        language = "Nevermind"
     sql = text("INSERT INTO packs (author_id, name, language, created, is_public) VALUES (:author_id, :name, :language, :created, :is_public)")
     db.session.execute(sql, {
         "author_id": userid,
@@ -18,7 +28,8 @@ def new_pack(userid: int, name: str, language: str, is_public: bool) -> bool:
         "is_public": is_public
     })
     db.session.commit()
-    return True
+    id = get_pack_id(userid, name)
+    return (True, id)
 
 # Simply deletes a pack with certain id
 def delete_pack(pack_id: int):
@@ -63,3 +74,18 @@ def get_packs(userid: int) -> list[dict] | None:
         }
         packs_list.append(dictionary)
     return packs_list
+
+# Returns id if pack exists, None otherwise
+def get_pack_id(author_id: int, name: str) -> int | None:
+    sql = text("SELECT id FROM packs WHERE author_id=:author_id AND name=:name")
+    res = db.session.execute(sql, {"author_id": author_id, "name": name})
+    id = res.fetchone()
+    if not id:
+        return None
+    return id[0]
+
+def count_packs(userid: int) -> int:
+    sql = text("SELECT COUNT(id) FROM packs WHERE author_id=:author_id")
+    res = db.session.execute(sql, {"author_id": userid})
+    count = res.fetchone()[0]
+    return count
