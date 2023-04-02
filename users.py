@@ -1,6 +1,9 @@
+from flask import session, request, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 from db import db
+
+import secrets
 
 # Returns (True, None) if succesfull and (False, error: str) otherwise
 def new_user(username: str, password: str) -> tuple:
@@ -14,16 +17,29 @@ def new_user(username: str, password: str) -> tuple:
     sql = text("INSERT INTO users (username, password, is_admin) VALUES(:username, :password, false)")
     db.session.execute(sql, {"username": username, "password": hash_value})
     db.session.commit()
+    login(username, password)
     return (True, None)
 
-# Returns (True, None) if succesfull and (False, error: str) otherwise
+# Returns True, None) if succesfull and (False, error: str) otherwise
 def login(username: str, password: str) -> tuple:
     id = get_userid(username)
     if id:
         hash_value = get_hashed_password(id)
         if check_password_hash(hash_value, password):
+            session["userid"] = id
+            session["username"] = username
+            session["crsf_token"] = secrets.token_hex(16)
             return (True, None)
     return (False, "Invalid username or password.")
+
+def logout() -> None:
+    del session["userid"]
+    del session["username"]
+    del session["crsf_token"]
+
+def correct_csrf():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
 
 # Returns user id if user exists, None otherwise
 def get_userid(username: str) -> int:

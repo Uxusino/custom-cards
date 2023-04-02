@@ -75,10 +75,34 @@ def get_packs(userid: int) -> list[dict] | None:
         packs_list.append(dictionary)
     return packs_list
 
+def get_pack(pack_id: int) -> dict | None:
+    sql = text("SELECT author_id, name, language, created, is_public FROM packs WHERE id=:id")
+    res = db.session.execute(sql, {"id": pack_id})
+    pack = res.fetchone()
+    if not pack:
+        return None
+    author = users.get_username(pack[0])
+    return {
+        "id": pack_id,
+        "author": author,
+        "name": pack[1],
+        "language": pack[2],
+        "created": pack[3],
+        "is_public": pack[4]
+    }
+
 # Returns id if pack exists, None otherwise
 def get_pack_id(author_id: int, name: str) -> int | None:
     sql = text("SELECT id FROM packs WHERE author_id=:author_id AND name=:name")
     res = db.session.execute(sql, {"author_id": author_id, "name": name})
+    id = res.fetchone()
+    if not id:
+        return None
+    return id[0]
+
+def get_owner(pack_id: int) -> int | None:
+    sql = text("SELECT u.id FROM users u, packs p WHERE p.id=:id AND p.author_id=u.id")
+    res = db.session.execute(sql, {"id": pack_id})
     id = res.fetchone()
     if not id:
         return None

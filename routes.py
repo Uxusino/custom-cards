@@ -23,14 +23,11 @@ def login():
     if not success:
         error_msg = login[1]
         flash(error_msg)
-        return redirect("/")
-    else:
-        session["username"] = username
-        return redirect("/")
+    return redirect("/")
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    users.logout()
     return redirect("/")
 
 @app.route("/register", methods = ["GET", "POST"])
@@ -45,7 +42,6 @@ def register():
             flash(error_msg)
             return render_template("register.html")
         else:
-            session["username"] = username
             profile_url = "/users/" + username
             return redirect(profile_url)
     return render_template("register.html")
@@ -53,7 +49,8 @@ def register():
 @app.route("/create", methods = ["GET", "POST"])
 def create():
     if request.method == "POST":
-        userid = users.get_userid(session["username"])
+        users.correct_csrf()
+        userid = session["userid"]
         name = request.form["name"]
         language = request.form["language"]
         is_public = request.form["publicity"]
@@ -75,7 +72,12 @@ def create():
 
 @app.route("/packs/<int:id>")
 def pack(id):
-    return f"This page will contain a pack with id {id}."
+    pack = packs.get_pack(id)
+    if pack:
+        userid = packs.get_owner(id)
+    else:
+        userid = None
+    return render_template("pack.html", userid=userid, pack=pack)
 
 @app.route("/simulator")
 def simulator():

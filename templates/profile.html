@@ -16,7 +16,7 @@
             {% if username != current_user and pack['is_public'] == False %}
                 {# skip #}
             {% else %}
-                <h3>{{ pack['name'] }}</h3>
+                <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
                 <p>Language: {{ pack['language'] }}</p>
                 <p>Created at: {{ pack['created'] }}</p>
             {% endif %}
