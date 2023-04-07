@@ -18,33 +18,11 @@ Tällä hetkellä näistä ovat valmiina seuraavat ominaisuudet:
 
 Mikä ei ole vielä valmista:
 - On mahdollista siirtyä pakan sivulle, jossa näkyy tietoja siitä. Korttien luominen pakoissa ei kuitenkaan ole vielä mahdollista.
-- Pakettien muokkaaminen tai poistaminen ei ole mahdollista, vaikka sivulle on lisätty joitakin painikkeita.
-- (Jos esimerkiksi haluat muokata paketin nimeä ja napsautat painiketta, sinut ohjataan yksinkertaisesti pääsivulle.)
+- Pakkojen muokkaaminen tai poistaminen ei ole mahdollista, vaikka sivulle on lisätty joitakin painikkeita.
+- (Jos esimerkiksi haluat muokata pakan nimeä ja napsautat painiketta, sinut ohjataan yksinkertaisesti pääsivulle.)
 - Ei voi jättää arvioita ja kommentteja toisille pakoille.
 - Pelisimulaattoria ei ole.
 - Käyttäjiä tai pakkoja ei voi etsiä.
 - Sovelluksessa ei ole mitään ulkoasua, vain pelkkää html-koodi.
 
-Ohjeet paikalliseen käynnistämiseen:
-
-Kloonaa tämä repositorio omalle koneellesi ja siirry sen juurikansioon. Luo kansioon .env-tiedosto ja määritä sen sisältö seuraavanlaiseksi:
-
-```
-POSTGRESQL_PASS=<your-pass>
-SECRET_KEY=<your-secret-key>
-DATABASE_URL=<your-postgresql-local-url>
-```
-Seuraavaksi aktivoi virtuaaliympäristö ja asenna sovelluksen riippuvuudet komennoilla
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r ./requirements.txt
-```
-Määritä vielä tietokannan skeema komennolla
-```
-psql < schema.sql
-```
-Nyt voit käynnistää sovelluksen komennolla
-```
-flask run
-```
+Sovellus on saatavilla [Fly.io:ssa](https://custom-cah.fly.dev)

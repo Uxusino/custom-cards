@@ -1,0 +1,32 @@
+# fly.toml file generated for custom-cah on 2023-04-07T12:54:26+03:00
+
+app = "custom-cah"
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+primary_region = "ams"
+processes = []
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+
+[env]
+  PORT = "5000"
+
+[[services]]
+  internal_port = 5000
+  processes = ["app"]
+  protocol = "tcp"
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
