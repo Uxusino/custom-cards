@@ -49,6 +49,7 @@ def register():
 @app.route("/create", methods = ["GET", "POST"])
 def create():
     if request.method == "POST":
+        #token = request.form["crsf_token"]
         users.correct_csrf()
         userid = session["userid"]
         name = request.form["name"]

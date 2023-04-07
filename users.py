@@ -20,7 +20,7 @@ def new_user(username: str, password: str) -> tuple:
     login(username, password)
     return (True, None)
 
-# Returns True, None) if succesfull and (False, error: str) otherwise
+# Returns (True, None) if succesfull and (False, error: str) otherwise
 def login(username: str, password: str) -> tuple:
     id = get_userid(username)
     if id:
@@ -38,7 +38,7 @@ def logout() -> None:
     del session["crsf_token"]
 
 def correct_csrf():
-    if session["csrf_token"] != request.form["csrf_token"]:
+    if session["crsf_token"] != request.form["crsf_token"]:
         abort(403)
 
 # Returns user id if user exists, None otherwise
