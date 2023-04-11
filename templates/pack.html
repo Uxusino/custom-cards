@@ -4,26 +4,31 @@
     <p>This pack is set as private.</p>
 {% else %}
     <h1>{{ pack['name'] }}</h1>
+
     {% if userid == session["userid"] %}
         <a href="/">Edit</a>
+        <br>
     {% endif %}
-    <br>
+
     <i>{{ pack['author'] }}</i>
     <p>Language: {{ pack['language'] }}</p>
+
     {% if userid == session["userid"] %}
         <a href="/">Edit</a>
+        <br>
     {% endif %}
+
     {% if pack['is_public'] == True %}
         <p>This is a public pack.</p>
     {% else %}
         <p>This is a private pack.</p>
     {% endif %}
+
     {% if userid == session["userid"] %}
         <a href="/">Switch</a>
+        <br>
     {% endif %}
-    <br>
-    <div>
-    </div>
+    
 {% endif %}
 <div>
     {% if not is_guest %}
