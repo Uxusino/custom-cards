@@ -4,6 +4,7 @@ from sqlalchemy.sql import text
 from db import db
 
 import secrets
+import string
 
 # Returns (True, None) if succesfull and (False, error: str) otherwise
 def new_user(username: str, password: str) -> tuple:
@@ -13,12 +14,24 @@ def new_user(username: str, password: str) -> tuple:
     # Check if this user already exists
     if get_userid(username):
         return (False, "This user already exists.")
+    if len(username) < 4 or len(username) > 30:
+        return (False, "Your username must contain from 4 to 30 symbols.")
+    if len(password) < 6:
+        return(False, "Your password must be at least 6 symbols long.")
+    if not good_chars(username):
+        return (False, "You can use some special symbols in your username, but not SO special...")
     hash_value = generate_password_hash(password)
     sql = text("INSERT INTO users (username, password, is_admin) VALUES(:username, :password, false)")
     db.session.execute(sql, {"username": username, "password": hash_value})
     db.session.commit()
     login(username, password)
     return (True, None)
+
+def good_chars(username):
+    allowed = string.ascii_letters + string.digits + string.punctuation
+    if any(char not in allowed for char in username):
+        return False
+    return True
 
 # Returns (True, None) if succesfull and (False, error: str) otherwise
 def login(username: str, password: str) -> tuple:
