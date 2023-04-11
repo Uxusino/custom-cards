@@ -25,4 +25,14 @@
     <div>
     </div>
 {% endif %}
-<a href="/">Main page</a>
+<div>
+    {% if not is_guest %}
+        <a href="/users/{{ session.username }}">My packs</a>
+        <a href="/search">Search</a>
+        <a href="/logout">Log out</a>
+    {% else %}
+        <a href="/register">Sign up</a>
+        <a href="/search">Search</a>
+    {% endif %}
+        <a href="/">Main page</a>
+</div>

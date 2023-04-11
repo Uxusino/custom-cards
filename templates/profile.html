@@ -1,11 +1,6 @@
 {% if user %}
-    <h1>{{ username }}'s profile</h1>
-    {% if username == current_user %}
-        <h2>My packs:</h2>
-    {% else %}
-        <h2>{{ username }}'s packs</h2>
-    {% endif %}
-    {% if username == current_user %}
+    <h1>{{ username }}</h1>
+    {% if username == session.username %}
         <a href="/create">New pack</a>
         <br>
     {% endif %}
@@ -13,7 +8,7 @@
         <i>It is empty here...</i>
     {% else %}
         {% for pack in packs %}
-            {% if username != current_user and pack['is_public'] == False %}
+            {% if username != session.username and pack['is_public'] == False %}
                 {# skip #}
             {% else %}
                 <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
@@ -27,4 +22,14 @@
     <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
 {% endif %}
 <br>
-<a href="/">Main page</a>
+<div>
+    {% if not is_guest %}
+        <a href="/users/{{ session.username }}">My packs</a>
+        <a href="/search">Search</a>
+        <a href="/logout">Log out</a>
+    {% else %}
+        <a href="/register">Sign up</a>
+        <a href="/search">Search</a>
+    {% endif %}
+        <a href="/">Main page</a>
+</div>

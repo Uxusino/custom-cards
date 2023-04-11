@@ -4,8 +4,10 @@
 {% if session.username %}
 <h2>Welcome, {{session.username}}!</h2>
 <a href="/users/{{session.username}}">My profile</a>
+<a href="/search">Search</a>
 <a href="/logout">Log out</a>
 {% else %}
+<a href="/search">Search</a>
 <form action="/login" method="POST">
     Username: <input type="text" name="username">
     Password: <input type="password" name="password">
