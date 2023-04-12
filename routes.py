@@ -95,6 +95,13 @@ def pack(id):
         is_guest = True
     return render_template("pack.html", userid=userid, pack=pack, is_guest=is_guest)
 
+@app.route("/edit_name", methods=["POST"])
+def edit_name():
+    name = request.form.get("name")
+    id = request.form.get("id")
+    packs.edit_name(pack_id=id, new_name=name)
+    return redirect(f"/packs/{id}")
+
 @app.route("/search")
 def search():
     return "On this page you will be able to search for packs or other users."

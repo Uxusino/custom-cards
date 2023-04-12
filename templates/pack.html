@@ -6,6 +6,44 @@
   {% else %}
     <title>{{ pack['name'] }}</title>
   {% endif %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function editName() {
+        var nameDisplay = document.getElementById("nameDisplay");
+        var nameInput = document.getElementById("nameInput");
+
+        nameDisplay.style.display = "none";
+        nameInput.style.display = "inline";
+        nameInput.value = nameDisplay.textContent;
+        nameInput.focus();
+    }
+
+    function saveName(event) {
+        if (event.key === "Enter") {
+            var nameDisplay = document.getElementById("nameDisplay");
+            var nameInput = document.getElementById("nameInput");
+
+            nameDisplay.textContent = nameInput.value;
+            nameDisplay.style.display = "inline";
+            nameInput.style.display = "none";
+
+            $.ajax({
+                url: "/edit_name",
+                type: "POST",
+                data: {
+                    name: nameInput.value,
+                    id: "{{ pack['id'] }}"
+                },
+                success: function(response) {
+                    console.log("Pack name edited successfully.");
+                },
+                error: function(response) {
+                    console.log("Error!")
+                }
+            });
+        }
+    }
+  </script>
 </head>
 <body>
     {% if not pack %}
@@ -13,31 +51,36 @@
     {% elif userid != session["userid"] and pack['is_public'] == False %}
         <p>This pack is set as private.</p>
     {% else %}
-        <h1>{{ pack['name'] }}</h1>
+        <span id="nameDisplay">{{ pack['name'] }}</span>
 
         {% if userid == session["userid"] %}
-            <a href="/">Edit</a>
-            <br>
+            <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event)">
+            <button onclick="editName()">Edit</button>
         {% endif %}
 
+        <br>
         <i>{{ pack['author'] }}</i>
         <p>Language: {{ pack['language'] }}</p>
 
         {% if userid == session["userid"] %}
             <a href="/">Edit</a>
-            <br>
         {% endif %}
 
         {% if pack['is_public'] == True %}
             <p>This is a public pack.</p>
+            {% if userid == session["userid"] %}
+                <a href="/">Make private</a>
+                <br>
+            {% endif %}
         {% else %}
             <p>This is a private pack.</p>
+            {% if userid == session["userid"] %}
+                <a href="/">Make public</a>
+                <br>
+            {% endif %}
         {% endif %}
 
-        {% if userid == session["userid"] %}
-            <a href="/">Switch</a>
-            <br>
-        {% endif %}
+        <br>
         
     {% endif %}
     <div>
