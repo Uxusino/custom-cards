@@ -1,43 +1,55 @@
-{% if not pack %}
-    <p>This pack doesn't exist.</p>
-{% elif userid != session["userid"] and pack['is_public'] == False %}
-    <p>This pack is set as private.</p>
-{% else %}
-    <h1>{{ pack['name'] }}</h1>
-
-    {% if userid == session["userid"] %}
-        <a href="/">Edit</a>
-        <br>
-    {% endif %}
-
-    <i>{{ pack['author'] }}</i>
-    <p>Language: {{ pack['language'] }}</p>
-
-    {% if userid == session["userid"] %}
-        <a href="/">Edit</a>
-        <br>
-    {% endif %}
-
-    {% if pack['is_public'] == True %}
-        <p>This is a public pack.</p>
+<!DOCTYPE html>
+<html>
+<head>
+  {% if not pack or (userid != session["userid"] and pack['is_public'] == False) %}
+    <title>Pack №404</title>
+  {% else %}
+    <title>{{ pack['name'] }}</title>
+  {% endif %}
+</head>
+<body>
+    {% if not pack %}
+        <p>This pack doesn't exist.</p>
+    {% elif userid != session["userid"] and pack['is_public'] == False %}
+        <p>This pack is set as private.</p>
     {% else %}
-        <p>This is a private pack.</p>
-    {% endif %}
+        <h1>{{ pack['name'] }}</h1>
 
-    {% if userid == session["userid"] %}
-        <a href="/">Switch</a>
-        <br>
+        {% if userid == session["userid"] %}
+            <a href="/">Edit</a>
+            <br>
+        {% endif %}
+
+        <i>{{ pack['author'] }}</i>
+        <p>Language: {{ pack['language'] }}</p>
+
+        {% if userid == session["userid"] %}
+            <a href="/">Edit</a>
+            <br>
+        {% endif %}
+
+        {% if pack['is_public'] == True %}
+            <p>This is a public pack.</p>
+        {% else %}
+            <p>This is a private pack.</p>
+        {% endif %}
+
+        {% if userid == session["userid"] %}
+            <a href="/">Switch</a>
+            <br>
+        {% endif %}
+        
     {% endif %}
-    
-{% endif %}
-<div>
-    {% if not is_guest %}
-        <a href="/users/{{ session.username }}">My packs</a>
-        <a href="/search">Search</a>
-        <a href="/logout">Log out</a>
-    {% else %}
-        <a href="/register">Sign up</a>
-        <a href="/search">Search</a>
-    {% endif %}
-        <a href="/">Main page</a>
-</div>
+    <div>
+        {% if not is_guest %}
+            <a href="/users/{{ session.username }}">My packs</a>
+            <a href="/search">Search</a>
+            <a href="/logout">Log out</a>
+        {% else %}
+            <a href="/register">Sign up</a>
+            <a href="/search">Search</a>
+        {% endif %}
+            <a href="/">Main page</a>
+    </div>
+</body>
+</html>

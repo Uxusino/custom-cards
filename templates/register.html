@@ -1,16 +1,24 @@
-<form method="POST">
-    Username: <input type="text" name="username">
-    Password: <input type="password" name="password">
-    <br>
-    <input type="submit" value="Submit">
-</form>
-{% block content %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{msg}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-{% endblock %}
-<a href="/">Main page</a>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+</head>
+<body>
+    <form method="POST">
+        Username: <input type="text" name="username" placeholder="Username">
+        Password: <input type="password" name="password" placeholder="Password">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    {% block content %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p>{{msg}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    {% endblock %}
+    <a href="/">Main page</a>
+</body>
+</html>

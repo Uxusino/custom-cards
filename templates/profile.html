@@ -1,35 +1,43 @@
-{% if user %}
-    <h1>{{ username }}</h1>
-    {% if username == session.username %}
-        <a href="/create">New pack</a>
-        <br>
-    {% endif %}
-    {% if not packs %}
-        <i>It is empty here...</i>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ username }}'s packs</title>
+</head>
+<body>
+    {% if user %}
+        <h1>{{ username }}</h1>
+        {% if username == session.username %}
+            <a href="/create">New pack</a>
+            <br>
+        {% endif %}
+        {% if not packs %}
+            <i>It is empty here...</i>
+        {% else %}
+            {% for pack in packs %}
+                {% if username != session.username and pack['is_public'] == False %}
+                    {# skip #}
+                {% else %}
+                    <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
+                    <p>Language: {{ pack['language'] }}</p>
+                    <p>Created at: {{ pack['created'] }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     {% else %}
-        {% for pack in packs %}
-            {% if username != session.username and pack['is_public'] == False %}
-                {# skip #}
-            {% else %}
-                <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
-                <p>Language: {{ pack['language'] }}</p>
-                <p>Created at: {{ pack['created'] }}</p>
-            {% endif %}
-        {% endfor %}
+        <h2>You are trying to access an unexisting user :(</h2>
+        <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
     {% endif %}
-{% else %}
-    <h2>You are trying to access an unexisting user :(</h2>
-    <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
-{% endif %}
-<br>
-<div>
-    {% if not is_guest %}
-        <a href="/users/{{ session.username }}">My packs</a>
-        <a href="/search">Search</a>
-        <a href="/logout">Log out</a>
-    {% else %}
-        <a href="/register">Sign up</a>
-        <a href="/search">Search</a>
-    {% endif %}
-        <a href="/">Main page</a>
-</div>
+    <br>
+    <div>
+        {% if not is_guest %}
+            <a href="/users/{{ session.username }}">My packs</a>
+            <a href="/search">Search</a>
+            <a href="/logout">Log out</a>
+        {% else %}
+            <a href="/register">Sign up</a>
+            <a href="/search">Search</a>
+        {% endif %}
+            <a href="/">Main page</a>
+    </div>
+</body>
+</html>

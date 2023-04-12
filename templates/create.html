@@ -1,4 +1,7 @@
+<!DOCTYPE html>
+<html>
 <head>
+    <title>Create own pack</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script
         src="https://code.jquery.com/jquery-3.6.4.min.js"
@@ -8,14 +11,13 @@
 </head>
 <body>
     <form method="POST">
-        Name: <input type="text" name="name">
+        Name: <input type="text" name="name" placeholder="Name of your pack">
         <br>
         Language: <select name="language" class="form-control select2">
             {% for language in languages %}
                 <option value="{{ language }}">{{ language }}</option>
             {% endfor %}
         </select>
-        <br>
         <p>
         *Your pack will be...
         <input type="radio" name="publicity" value="0" required> Private
@@ -47,5 +49,6 @@
     <a href="/logout">Log out</a>
     <a href="/">Main page</a>
 </div>
+</html>
 
 
