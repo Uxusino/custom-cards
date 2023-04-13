@@ -93,13 +93,34 @@ def pack(id):
         is_guest = False
     else:
         is_guest = True
-    return render_template("pack.html", userid=userid, pack=pack, is_guest=is_guest)
+    return render_template("pack.html", userid=userid, pack=pack, is_guest=is_guest, languages=languages)
 
 @app.route("/edit_name", methods=["POST"])
 def edit_name():
+    users.correct_csrf()
     name = request.form.get("name")
     id = request.form.get("id")
     packs.edit_name(pack_id=id, new_name=name)
+    return redirect(f"/packs/{id}")
+
+@app.route("/edit_language", methods=["POST"])
+def edit_language():
+    users.correct_csrf()
+    language = request.form.get("language")
+    id = request.form.get("id")
+    packs.edit_language(pack_id=id, new_language=language)
+    return redirect(f"/packs/{id}")
+
+@app.route("/edit_privacy", methods=["POST"])
+def edit_privacy():
+    users.correct_csrf()
+    privacy = request.form.get("privacy")
+    if privacy == "true":
+        privacy = True
+    else:
+        privacy = False
+    id = request.form.get("id")
+    packs.edit_publicity(pack_id=id, is_public=privacy)
     return redirect(f"/packs/{id}")
 
 @app.route("/search")

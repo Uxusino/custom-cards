@@ -6,43 +6,99 @@
   {% else %}
     <title>{{ pack['name'] }}</title>
   {% endif %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function editName() {
         var nameDisplay = document.getElementById("nameDisplay");
         var nameInput = document.getElementById("nameInput");
-
         nameDisplay.style.display = "none";
         nameInput.style.display = "inline";
         nameInput.value = nameDisplay.textContent;
         nameInput.focus();
     }
-
     function saveName(event) {
         if (event.key === "Enter") {
             var nameDisplay = document.getElementById("nameDisplay");
             var nameInput = document.getElementById("nameInput");
-
             nameDisplay.textContent = nameInput.value;
             nameDisplay.style.display = "inline";
             nameInput.style.display = "none";
-
             $.ajax({
                 url: "/edit_name",
                 type: "POST",
                 data: {
                     name: nameInput.value,
-                    id: "{{ pack['id'] }}"
+                    id: "{{ pack['id'] }}",
+                    crsf_token: "{{ session.crsf_token }}"
                 },
-                success: function(response) {
+                success: function() {
                     console.log("Pack name edited successfully.");
                 },
-                error: function(response) {
+                error: function() {
                     console.log("Error!")
                 }
             });
         }
     }
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("changeLanguage").onclick = function() {
+            document.getElementById("modal-languages").style.display = "block";
+        };
+
+        document.getElementById("closeModal").onclick = function() {
+            document.getElementById("modal-languages").style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("modal-languages")) {
+                document.getElementById("modal-languages").style.display = "none";
+            }
+        };
+    }); 
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var languages = {{ languages|tojson }};
+        function updateLanguageList(filter) {
+            var languageList = document.getElementById("languageList");
+            languageList.innerHTML = '';
+            languages.forEach(function(language) {
+                if (!filter || language.toLowerCase().includes(filter.toLowerCase())) {
+                    var languageItem = document.createElement("div");
+                    languageItem.textContent = language;
+                    languageItem.classList.add("language-item");
+                    languageItem.onclick = function() {
+                        document.getElementById("modal-languages").style.display = "none";
+                        $.ajax({
+                            url: "/edit_language",
+                            type: "POST",
+                            data: {
+                                language: language,
+                                id: "{{ pack['id'] }}",
+                                crsf_token: "{{ session.crsf_token }}"
+                            },
+                            success: function() {
+                                console.log("Language edited successfully!")
+                            },
+                            error: function() {
+                                console.log("There was an error while editing language.")
+                            }
+                        });
+                    };
+                    languageList.appendChild(languageItem);
+                }
+            });
+        }
+        document.getElementById("languageSearch").addEventListener("input", function(event) {
+            updateLanguageList(event.target.value);
+        });
+        document.getElementById("changeLanguage").addEventListener("click", function() {
+           updateLanguageList(''); 
+        });
+    });
   </script>
 </head>
 <body>
@@ -55,7 +111,7 @@
 
         {% if userid == session["userid"] %}
             <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event)">
-            <button onclick="editName()">Edit</button>
+            <button id="editNameButton" onclick="editName()">Edit</button>
         {% endif %}
 
         <br>
@@ -63,20 +119,37 @@
         <p>Language: {{ pack['language'] }}</p>
 
         {% if userid == session["userid"] %}
-            <a href="/">Edit</a>
+            <button id="changeLanguage">Change language</button>
+            <div id="modal-languages" class="modal">
+                <div class="modal-content">
+                    <span id="closeModal">&times;</span>
+                    <input type="text" id="languageSearch" placeholder="Search for a language...">
+                    <div id="languageList" class="language-list"></div>
+                </div>
+            </div>
         {% endif %}
 
         {% if pack['is_public'] == True %}
             <p>This is a public pack.</p>
             {% if userid == session["userid"] %}
-                <a href="/">Make private</a>
-                <br>
+                <form method="POST" action="/edit_privacy">
+                    <input type="hidden" name="privacy" value="false">
+                    <input type="hidden" name="id" value="{{ pack['id'] }}">
+                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                    <button type="submit">Make private</button>
+                    <br>
+                </form>
             {% endif %}
         {% else %}
             <p>This is a private pack.</p>
             {% if userid == session["userid"] %}
-                <a href="/">Make public</a>
-                <br>
+                <form method="POST" action="/edit_privacy">
+                    <input type="hidden" name="privacy" value="true">
+                    <input type="hidden" name="id" value="{{ pack['id'] }}">
+                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                    <button type="submit">Make public</button>
+                    <br>
+                </form>
             {% endif %}
         {% endif %}
 

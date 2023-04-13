@@ -51,7 +51,7 @@ def logout() -> None:
     del session["crsf_token"]
 
 def correct_csrf():
-    if session["crsf_token"] != request.form["crsf_token"]:
+    if session.get("crsf_token") != request.form.get("crsf_token"):
         abort(403)
 
 # Returns user id if user exists, None otherwise
