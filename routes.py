@@ -123,6 +123,13 @@ def edit_privacy():
     packs.edit_publicity(pack_id=id, is_public=privacy)
     return redirect(f"/packs/{id}")
 
+@app.route("/delete_pack", methods=["POST"])
+def delete_pack():
+    users.correct_csrf()
+    id = request.form.get("id")
+    packs.delete_pack(id)
+    return redirect(f"/users/{session.get('username')}")
+
 @app.route("/search")
 def search():
     return "On this page you will be able to search for packs or other users."

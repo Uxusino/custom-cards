@@ -152,9 +152,15 @@
                 </form>
             {% endif %}
         {% endif %}
-
         <br>
-        
+        {% if userid == session["userid"] %}
+            <form method="POST" action="/delete_pack">
+                <input type="hidden" name="id" value="{{ pack['id'] }}">
+                <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                <button type="submit">Delete pack</button>
+            </form>
+        {% endif %}
+
     {% endif %}
     <div>
         {% if not is_guest %}
