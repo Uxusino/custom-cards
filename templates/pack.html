@@ -160,6 +160,76 @@
                 <button type="submit">Delete pack</button>
             </form>
         {% endif %}
+        {% block content %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <p>{{msg}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
+        <div class="cards-block" id="white-cards">
+            <p>White cards:</p>
+            {% if userid == session["userid"] %}
+                <form method="POST" action="/add_white_card">
+                    <input type="text" name="white_card_content" placeholder="Add new white card...">
+                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                    <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                    <button type="submit">Add</button>
+                </form>
+                
+            {% endif %}
+            {% if white_cards %}
+                {% for white_card in white_cards %}
+                    <div>
+                        <a>{{ white_card['content'] }}</a>
+                        <form method="POST" action="/edit_white_card">
+                            <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
+                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                            <button type="submit">Edit</button>
+                        </form>
+                        <form method="POST" action="/delete_white_card">
+                            <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
+                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="cards-block" id="black-cards">
+            <p>Black cards:</p>
+            {% if userid == session["userid"] %}
+                <form method="POST" action="/add_black_card">
+                    <input type="text" name="black_card_content" placeholder="Add new black card...">
+                    <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                    <button type="submit">Add</button>
+                </form>
+            {% endif %}
+            {% if black_cards %}
+                {% for black_card in black_cards %}
+                    <div>
+                        <a>{{ black_card['content'] }}</a>
+                        <form method="POST" action="/edit_black_card">
+                            <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
+                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                            <button type="submit">Edit</button>
+                        </form>
+                        <form method="POST" action="/delete_black_card">
+                            <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
+                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
     {% endif %}
     <div>

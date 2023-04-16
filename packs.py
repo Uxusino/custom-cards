@@ -3,6 +3,7 @@ from sqlalchemy.sql import text
 from db import db
 
 import users
+import re
 
 # Returns (True, pack_id: int) if successfull, (False, error: str) otherwise
 def new_pack(userid: int, name: str, language: str, is_public: bool) -> tuple:
@@ -30,6 +31,149 @@ def new_pack(userid: int, name: str, language: str, is_public: bool) -> tuple:
     db.session.commit()
     id = get_pack_id(userid, name)
     return (True, id)
+
+def add_white_card(pack_id: int, content: str) -> tuple:
+    check = check_card_content(content)
+    if not check:
+        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+    sql = text("INSERT INTO white_cards (pack_id, content) VALUES (:pack_id, :content)")
+    db.session.execute(sql, {
+        "pack_id": pack_id,
+        "content": content
+    })
+    db.session.commit()
+    return (True, None)
+
+def check_card_content(content) -> tuple:
+    if len(content) < 1 or len(content) > 50:
+        return False
+    return True
+
+def delete_white_card(id: int) -> None:
+    sql = text("DELETE FROM white_cards WHERE id=:id")
+    db.session.execute(sql, {
+        "id": id
+    })
+    db.session.commit()
+
+def edit_white_card(id: int, new_content: str) -> None:
+    check = check_card_content(new_content)
+    if not check:
+        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+    sql = text("UPDATE white_cards SET content=:new_content WHERE id=:id")
+    db.session.execute(sql, {
+        "new_content": new_content,
+        "id": id
+    })
+    db.session.commit()
+    return (True, None)
+
+# If you want underscore to be a part of the text, write it like /_
+def parse_black_card(content: str) -> tuple:
+    # Makes all underscores 1 symbol long
+    new_content = re.sub(r"(?<!/)_+", "_", content)
+    # Counts all matches that could be inserted into in future
+    count = len(re.findall(r"(?<!/)_+", new_content))
+    return (new_content, count)
+
+def black_card_display(content: str) -> str:
+    return content.replace("/_", "_")
+
+def add_black_card(pack_id: int, content: str) -> tuple:
+    check = check_card_content(content)
+    if not check:
+        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+    sql = text("INSERT INTO black_cards (pack_id, content, blanks) VALUES (:pack_id, :content, :blanks)")
+    parse = parse_black_card(content)
+    content = parse[0]
+    blanks = parse[1]
+    db.session.execute(sql, {
+        "pack_id": pack_id,
+        "content": content,
+        "blanks": blanks
+    })
+    db.session.commit()
+    return (True, None)
+
+def delete_black_card(id: int) -> None:
+    sql = text("DELETE FROM black_cards WHERE id=id")
+    db.session.execute(sql, {
+        "id": id
+    })
+    db.session.commit()
+
+def edit_black_card(id: int, new_content: str) -> None:
+    check = check_card_content(new_content)
+    if not check:
+        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+    sql = text("UPDATE black_cards SET content=:new_content, blanks=:blanks WHERE id=:id")
+    parsed = parse_black_card(new_content)
+    new_content = parsed[0]
+    blanks = parsed[1]
+    db.session.execute(sql, {
+        "new_content": new_content,
+        "blanks": blanks,
+        "id": id
+    })
+    db.session.commit()
+    return (True, None)
+
+# Inserts words into underscores and lives /_ untouched.
+def insert_into_black_card(black_content: str, white_content: list[str], blanks: int) -> str:
+    if len(white_content) != blanks:
+        return None
+    if blanks == 0:
+        blanks = 1
+        black_content = black_content + "_"
+    innocent_slashes = re.findall(r"/_+", black_content)
+    print(innocent_slashes)
+    black_content_temp = re.sub(r"/_+", "[%ACTUALLY-JUST-A-PLACEHOLDER%]", black_content)
+
+    y = 0
+    x = 0
+    while x < len(black_content_temp) and y < blanks:
+        if black_content_temp[x] == "_":
+            black_content_temp = black_content_temp[:x] + white_content[y] + black_content_temp[x+1:]
+            x += len(white_content[y]) - 1
+            y += 1
+        x += 1
+
+    if len(innocent_slashes) != 0:
+        black_content_list = black_content_temp.split("[%ACTUALLY-JUST-A-PLACEHOLDER%]")
+        black_content_temp = black_content_list[0]
+        for z in range(len(innocent_slashes)):
+            black_content_temp += innocent_slashes[z] + black_content_list[z+1]
+    return black_content_temp
+
+def get_white_cards(pack_id: int) -> list[dict] | None:
+    sql = text("SELECT id, content FROM white_cards WHERE pack_id=:pack_id ORDER BY id DESC")
+    res = db.session.execute(sql, {"pack_id": pack_id})
+    if not res:
+        return None
+    cards = res.fetchall()
+    cards_list = []
+    for card in cards:
+        dictionary = {
+            "id": card[0],
+            "content": card[1]
+        }
+        cards_list.append(dictionary)
+    return cards_list
+
+def get_black_cards(pack_id: int) -> list[dict] | None:
+    sql = text("SELECT id, content FROM black_cards WHERE pack_id=:pack_id ORDER BY id DESC")
+    res = db.session.execute(sql, {"pack_id": pack_id})
+    if not res:
+        return None
+    cards = res.fetchall()
+    cards_list = []
+    for card in cards:
+        dictionary = {
+            "id": card[0],
+            "content": black_card_display(card[1])
+        }
+        cards_list.append(dictionary)
+    return cards_list
 
 # Simply deletes a pack with certain id
 def delete_pack(pack_id: int):
@@ -113,3 +257,11 @@ def count_packs(userid: int) -> int:
     res = db.session.execute(sql, {"author_id": userid})
     count = res.fetchone()[0]
     return count
+
+# Testing area
+if __name__ == "__main__":
+    bc = "/_Today I/___will//eat _ with/_ my _ while _"
+    wc = ["apple", "banana", "petting a cat"]
+    blanks = 3
+    print(black_card_display(insert_into_black_card(bc, wc, blanks)))
+    

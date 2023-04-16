@@ -82,6 +82,72 @@ def create():
         return redirect("/register")
     return render_template("create.html", languages=languages)
 
+@app.route("/add_white_card", methods=["POST"])
+def add_white_card():
+    users.correct_csrf()
+    content = request.form["white_card_content"]
+    pack_id = request.form["pack_id"]
+    card = packs.add_white_card(pack_id, content)
+    success = card[0]
+    if not success:
+        error_msg = card[1]
+        flash(error_msg)
+    return redirect(f"/packs/{pack_id}")
+    
+@app.route("/add_black_card", methods=["POST"])
+def add_black_card():
+    users.correct_csrf()
+    content = request.form["black_card_content"]
+    pack_id = request.form["pack_id"]
+    card = packs.add_black_card(pack_id, content)
+    success = card[0]
+    if not success:
+        error_msg = card[1]
+        flash(error_msg)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/edit_white_card", methods=["POST"])
+def edit_white_card():
+    users.correct_csrf()
+    id = request.form["white_card_id"]
+    content = "Testing... ;)"
+    card = packs.edit_white_card(id, content)
+    success = card[0]
+    pack_id = request.form["pack_id"]
+    if not success:
+        error_msg = card[1]
+        flash(error_msg)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/edit_black_card", methods=["POST"])
+def edit_black_card():
+    users.correct_csrf()
+    id = request.form["black_card_id"]
+    content = "Testing _ (;"
+    card = packs.edit_black_card(id, content)
+    success = card[0]
+    pack_id = request.form["pack_id"]
+    if not success:
+        error_msg = card[1]
+        flash(error_msg)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/delete_white_card", methods=["POST"])
+def delete_white_card():
+    users.correct_csrf()
+    id = request.form["white_card_id"]
+    pack_id = request.form["pack_id"]
+    packs.delete_white_card(id)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/delete_black_card", methods=["POST"])
+def delete_black_card():
+    users.correct_csrf()
+    id = request.form["black_card_id"]
+    pack_id = request.form["pack_id"]
+    packs.delete_black_card(id)
+    return redirect(f"/packs/{pack_id}")
+
 @app.route("/packs/<int:id>")
 def pack(id):
     pack = packs.get_pack(id)
@@ -93,7 +159,15 @@ def pack(id):
         is_guest = False
     else:
         is_guest = True
-    return render_template("pack.html", userid=userid, pack=pack, is_guest=is_guest, languages=languages)
+    white_cards = packs.get_white_cards(id)
+    black_cards = packs.get_black_cards(id)
+    return render_template("pack.html",
+                           userid=userid,
+                           pack=pack,
+                           is_guest=is_guest,
+                           languages=languages,
+                           white_cards=white_cards,
+                           black_cards=black_cards)
 
 @app.route("/edit_name", methods=["POST"])
 def edit_name():
