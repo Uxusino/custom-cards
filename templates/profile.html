@@ -35,13 +35,17 @@
     <div class="menu">
         {% if not is_guest %}
             <a href="/users/{{ session.username }}">My packs</a>
+            <br>
             <a href="/search">Search</a>
+            <br>
             <a href="/logout">Log out</a>
         {% else %}
             <a href="/register">Sign up</a>
+            <br>
             <a href="/search">Search</a>
         {% endif %}
-            <a href="/">Main page</a>
+        <br>
+        <a href="/">Main page</a>
     </div>
 </body>
 </html>
