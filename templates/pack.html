@@ -9,31 +9,28 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    function editName() {
-        var nameDisplay = document.getElementById("nameDisplay");
-        var nameInput = document.getElementById("nameInput");
+    function editName(nameDisplay, nameInput) {
         nameDisplay.style.display = "none";
         nameInput.style.display = "inline";
         nameInput.value = nameDisplay.textContent;
         nameInput.focus();
     }
-    function saveName(event) {
+    function saveName(event, nameDisplay, nameInput, url, cardId = null) {
         if (event.key === "Enter") {
-            var nameDisplay = document.getElementById("nameDisplay");
-            var nameInput = document.getElementById("nameInput");
             nameDisplay.textContent = nameInput.value;
             nameDisplay.style.display = "inline";
             nameInput.style.display = "none";
             $.ajax({
-                url: "/edit_name",
+                url: url,
                 type: "POST",
                 data: {
                     name: nameInput.value,
                     id: "{{ pack['id'] }}",
+                    cardId: cardId,
                     crsf_token: "{{ session.crsf_token }}"
                 },
                 success: function() {
-                    console.log("Pack name edited successfully.");
+                    console.log("Name edited successfully.");
                 },
                 error: function() {
                     console.log("Error!")
@@ -110,8 +107,8 @@
         <span id="nameDisplay">{{ pack['name'] }}</span>
 
         {% if userid == session["userid"] %}
-            <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event)">
-            <button id="editNameButton" onclick="editName()">Edit</button>
+            <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event, nameDisplay, nameInput, '/edit_name')">
+            <button id="editNameButton" onclick="editName(nameDisplay, nameInput)">Edit</button>
         {% endif %}
 
         <br>
@@ -173,7 +170,7 @@
             <p>White cards:</p>
             {% if userid == session["userid"] %}
                 <form method="POST" action="/add_white_card">
-                    <input type="text" name="white_card_content" placeholder="Add new white card...">
+                    <input type="text" name="white_card_content" placeholder="Add new white card..." required>
                     <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
                     <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                     <button type="submit">Add</button>
@@ -183,13 +180,14 @@
             {% if white_cards %}
                 {% for white_card in white_cards %}
                     <div class="card" id="white-card">
-                        <a>{{ white_card['content'] }}</a>
-                        <form method="POST" action="/edit_white_card">
-                            <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
-                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                            <button type="submit">Edit</button>
-                        </form>
+                        <a class="card-name" id="whiteCardDisplay{{ white_card['id'] }}">{{ white_card['content'] }}</a>
+                        <input 
+                            type="text" 
+                            id="whiteCardInput{{ white_card['id'] }}" 
+                            style="display:none" 
+                            onkeydown="saveName(event, whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }}, '/edit_white_card', {{ white_card['id'] }})" required>
+                        <button type="button" onclick="editName(whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }})">Edit</button>
+
                         <form method="POST" action="/delete_white_card">
                             <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
                             <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
@@ -204,7 +202,7 @@
             <p>Black cards:</p>
             {% if userid == session["userid"] %}
                 <form method="POST" action="/add_black_card">
-                    <input type="text" name="black_card_content" placeholder="Add new black card...">
+                    <input type="text" name="black_card_content" placeholder="Add new black card..." required>
                     <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                     <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
                     <button type="submit">Add</button>
@@ -213,13 +211,13 @@
             {% if black_cards %}
                 {% for black_card in black_cards %}
                     <div class="card" id="black-card">
-                        <a>{{ black_card['content'] }}</a>
-                        <form method="POST" action="/edit_black_card">
-                            <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
-                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                            <button type="submit">Edit</button>
-                        </form>
+                        <a class="card-name" id="blackCardDisplay{{ black_card['id'] }}">{{ black_card['content'] }}</a>
+                        <input
+                            type="text" 
+                            id="blackCardInput{{ black_card['id'] }}" 
+                            style="display:none" 
+                            onkeydown="saveName(event, blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }}, '/edit_black_card', {{ black_card['id'] }})" required>
+                        <button type="button" onclick="editName(blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }})">Edit</button>
                         <form method="POST" action="/delete_black_card">
                             <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
                             <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
@@ -232,16 +230,20 @@
         </div>
 
     {% endif %}
-    <div>
+    <div class="menu">
         {% if not is_guest %}
             <a href="/users/{{ session.username }}">My packs</a>
+            <br>
             <a href="/search">Search</a>
+            <br>
             <a href="/logout">Log out</a>
         {% else %}
             <a href="/register">Sign up</a>
+            <br>
             <a href="/search">Search</a>
         {% endif %}
-            <a href="/">Main page</a>
+        <br>
+        <a href="/">Main page</a>
     </div>
 </body>
 </html>

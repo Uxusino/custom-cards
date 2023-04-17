@@ -96,7 +96,7 @@ def add_black_card(pack_id: int, content: str) -> tuple:
     return (True, None)
 
 def delete_black_card(id: int) -> None:
-    sql = text("DELETE FROM black_cards WHERE id=id")
+    sql = text("DELETE FROM black_cards WHERE id=:id")
     db.session.execute(sql, {
         "id": id
     })

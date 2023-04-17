@@ -115,11 +115,11 @@ def add_black_card():
 @app.route("/edit_white_card", methods=["POST"])
 def edit_white_card():
     users.correct_csrf()
-    id = request.form["white_card_id"]
-    content = "Testing... ;)"
+    pack_id = request.form["id"]
+    id = request.form["cardId"]
+    content = request.form["name"]
     card = packs.edit_white_card(id, content)
     success = card[0]
-    pack_id = request.form["pack_id"]
     if not success:
         error_msg = card[1]
         flash(error_msg)
@@ -128,11 +128,11 @@ def edit_white_card():
 @app.route("/edit_black_card", methods=["POST"])
 def edit_black_card():
     users.correct_csrf()
-    id = request.form["black_card_id"]
-    content = "Testing _ (;"
+    pack_id = request.form["id"]
+    id = request.form["cardId"]
+    content = request.form["name"]
     card = packs.edit_black_card(id, content)
     success = card[0]
-    pack_id = request.form["pack_id"]
     if not success:
         error_msg = card[1]
         flash(error_msg)
