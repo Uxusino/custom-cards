@@ -2,23 +2,27 @@
 <html>
 <head>
   <title>Registration</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
 </head>
 <body>
-    <form method="POST">
-        Username: <input type="text" name="username" placeholder="Username">
-        Password: <input type="password" name="password" placeholder="Password">
-        <br>
-        <input type="submit" value="Submit">
-    </form>
-    {% block content %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p>{{msg}}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    {% endblock %}
-    <a href="/">Main page</a>
+    <div class="registration">
+        <h1>Sign Up</h1>
+        <form method="POST">
+            Username: <input type="text" name="username" placeholder="Username">
+            Password: <input type="password" name="password" placeholder="Password">
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+        {% block content %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <p>{{msg}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
+        <a href="/">Main page</a>
+    </div>
 </body>
 </html>

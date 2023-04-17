@@ -1,3 +1,25 @@
+body {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 20px;
+}
+
+.registration {
+    text-align: center;
+}
+
+.error-msg {
+    color: #a60d0d;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -43,6 +65,13 @@
     vertical-align: top;
     margin-right: 10px;
     width: 300px;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    border-color: #888;
 }
 
 #white-cards {

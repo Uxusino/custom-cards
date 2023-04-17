@@ -12,11 +12,17 @@ def index():
 def user(username):
     userid = users.get_userid(username)
     pack_list = packs.get_packs(userid)
+    pack_count = packs.count_packs(userid)
     if session.get("userid") is not None:
         is_guest = False
     else:
         is_guest = True
-    return render_template("profile.html", username=username, user=userid, packs=pack_list, is_guest=is_guest)
+    return render_template("profile.html",
+                           username=username,
+                           user=userid,
+                           packs=pack_list,
+                           is_guest=is_guest,
+                           pack_count=pack_count)
 
 @app.route("/login", methods=["POST"])
 def login():

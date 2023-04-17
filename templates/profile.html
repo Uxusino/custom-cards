@@ -2,10 +2,12 @@
 <html>
 <head>
   <title>{{ username }}'s packs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
 </head>
 <body>
     {% if user %}
         <h1>{{ username }}</h1>
+        <p>Created {{ pack_count }} packs</p>
         {% if username == session.username %}
             <a href="/create">New pack</a>
             <br>
@@ -17,9 +19,11 @@
                 {% if username != session.username and pack['is_public'] == False %}
                     {# skip #}
                 {% else %}
-                    <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
-                    <p>Language: {{ pack['language'] }}</p>
-                    <p>Created at: {{ pack['created'] }}</p>
+                    <div>
+                        <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
+                        <p>Language: {{ pack['language'] }}</p>
+                        <p>Created at: {{ pack['created'] }}</p>
+                    </div>
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -28,7 +32,7 @@
         <p>User named {{ username }} is not registered yet. Maybe you can ask them to join or become {{ username }} yourself.</p>
     {% endif %}
     <br>
-    <div>
+    <div class="menu">
         {% if not is_guest %}
             <a href="/users/{{ session.username }}">My packs</a>
             <a href="/search">Search</a>

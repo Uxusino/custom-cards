@@ -182,7 +182,7 @@
             {% endif %}
             {% if white_cards %}
                 {% for white_card in white_cards %}
-                    <div>
+                    <div class="card" id="white-card">
                         <a>{{ white_card['content'] }}</a>
                         <form method="POST" action="/edit_white_card">
                             <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
@@ -212,7 +212,7 @@
             {% endif %}
             {% if black_cards %}
                 {% for black_card in black_cards %}
-                    <div>
+                    <div class="card" id="black-card">
                         <a>{{ black_card['content'] }}</a>
                         <form method="POST" action="/edit_black_card">
                             <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
