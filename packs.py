@@ -177,7 +177,11 @@ def get_black_cards(pack_id: int) -> list[dict] | None:
 
 # Simply deletes a pack with certain id
 def delete_pack(pack_id: int):
+    delete_white_cards = text("DELETE FROM white_cards WHERE pack_id=:pack_id")
+    delete_black_cards = text("DELETE FROM black_cards WHERE pack_id=:pack_id")
     sql = text("DELETE FROM packs WHERE id=:id")
+    db.session.execute(delete_white_cards, {"pack_id": pack_id})
+    db.session.execute(delete_black_cards, {"pack_id": pack_id})
     db.session.execute(sql, {"id": pack_id})
     db.session.commit()
 
