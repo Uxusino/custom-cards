@@ -32,5 +32,6 @@ CREATE TABLE reviews (
     user_id INTEGER REFERENCES users,
     pack_id INTEGER REFERENCES packs,
     rating INTEGER,
-    comment TEXT
+    comment TEXT,
+    time TIMESTAMP
 );

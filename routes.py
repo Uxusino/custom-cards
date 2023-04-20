@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, flash, session
 
 import users
 import packs
+import reviews
 
 @app.route("/")
 def index():
@@ -26,8 +27,8 @@ def user(username):
 
 @app.route("/login", methods=["POST"])
 def login():
-    username = request.form["username"]
-    password = request.form["password"]
+    username = request.form.get("username")
+    password = request.form.get("password")
     login = users.login(username, password)
     success = login[0]
     if not success:
@@ -47,8 +48,8 @@ def register():
         url = f"/users/{username}"
         return redirect(f"{url}")
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
         new_user = users.new_user(username, password)
         success = new_user[0]
         if not success:
@@ -157,23 +158,41 @@ def delete_black_card():
 @app.route("/packs/<int:id>")
 def pack(id):
     pack = packs.get_pack(id)
+    current_userid = session.get("userid")
     if pack:
         userid = packs.get_owner(id)
     else:
         userid = None
-    if session.get("userid") is not None:
+    if current_userid is not None:
         is_guest = False
     else:
         is_guest = True
     white_cards = packs.get_white_cards(id)
     black_cards = packs.get_black_cards(id)
+    revs = reviews.get_all_reviews(id)
+    mean_rating = reviews.mean_rating(id)
+    user_left_review = reviews.review_left(id, current_userid)
+    # User's own review of the pack must always be placed on top.
+    if user_left_review:
+        i = 0
+        for review in revs:
+            if review['id'] == user_left_review:
+                authors_review = revs.pop(i)
+                break
+            i += 1
+    else:
+        authors_review = None
     return render_template("pack.html",
                            userid=userid,
                            pack=pack,
                            is_guest=is_guest,
                            languages=languages,
                            white_cards=white_cards,
-                           black_cards=black_cards)
+                           black_cards=black_cards,
+                           revs=revs,
+                           mean_rating=mean_rating,
+                           user_left_review=user_left_review,
+                           authors_review=authors_review)
 
 @app.route("/edit_name", methods=["POST"])
 def edit_name():
@@ -209,6 +228,16 @@ def delete_pack():
     id = request.form.get("id")
     packs.delete_pack(id)
     return redirect(f"/users/{session.get('username')}")
+
+@app.route("/rate_pack", methods=["POST"])
+def rate_pack():
+    users.correct_csrf()
+    rating = int(request.form.get("rating"))
+    comment = request.form.get("comment")
+    pack_id = request.form.get("pack_id")
+    author_id = request.form.get("author_id")
+    reviews.new_review(user_id=author_id, pack_id=pack_id, rating=rating, comment=comment)
+    return redirect(f"/packs/{pack_id}")
 
 @app.route("/search")
 def search():

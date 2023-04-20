@@ -33,7 +33,7 @@ def new_pack(userid: int, name: str, language: str, is_public: bool) -> tuple:
     return (True, id)
 
 def add_white_card(pack_id: int, content: str) -> tuple:
-    check = check_card_content(content)
+    check = check_white_card(content)
     if not check:
         return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
     sql = text("INSERT INTO white_cards (pack_id, content) VALUES (:pack_id, :content)")
@@ -44,8 +44,13 @@ def add_white_card(pack_id: int, content: str) -> tuple:
     db.session.commit()
     return (True, None)
 
-def check_card_content(content) -> tuple:
+def check_white_card(content) -> bool:
     if len(content) < 1 or len(content) > 50:
+        return False
+    return True
+
+def check_black_card(content) -> bool:
+    if len(content) < 1 or len(content) > 120:
         return False
     return True
 
@@ -57,7 +62,7 @@ def delete_white_card(id: int) -> None:
     db.session.commit()
 
 def edit_white_card(id: int, new_content: str) -> None:
-    check = check_card_content(new_content)
+    check = check_white_card(new_content)
     if not check:
         return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
     sql = text("UPDATE white_cards SET content=:new_content WHERE id=:id")
@@ -80,9 +85,9 @@ def black_card_display(content: str) -> str:
     return content.replace("/_", "_")
 
 def add_black_card(pack_id: int, content: str) -> tuple:
-    check = check_card_content(content)
+    check = check_black_card(content)
     if not check:
-        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+        return (False, "Card lenght must be at least 1 symbol and at most 120 symbols long.")
     sql = text("INSERT INTO black_cards (pack_id, content, blanks) VALUES (:pack_id, :content, :blanks)")
     parse = parse_black_card(content)
     content = parse[0]
@@ -103,9 +108,9 @@ def delete_black_card(id: int) -> None:
     db.session.commit()
 
 def edit_black_card(id: int, new_content: str) -> None:
-    check = check_card_content(new_content)
+    check = check_black_card(new_content)
     if not check:
-        return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
+        return (False, "Card lenght must be at least 1 symbol and at most 120 symbols long.")
     sql = text("UPDATE black_cards SET content=:new_content, blanks=:blanks WHERE id=:id")
     parsed = parse_black_card(new_content)
     new_content = parsed[0]
@@ -179,9 +184,11 @@ def get_black_cards(pack_id: int) -> list[dict] | None:
 def delete_pack(pack_id: int):
     delete_white_cards = text("DELETE FROM white_cards WHERE pack_id=:pack_id")
     delete_black_cards = text("DELETE FROM black_cards WHERE pack_id=:pack_id")
+    delete_reviews = text("DELETE FROM reviews WHERE pack_id=:pack_id")
     sql = text("DELETE FROM packs WHERE id=:id")
     db.session.execute(delete_white_cards, {"pack_id": pack_id})
     db.session.execute(delete_black_cards, {"pack_id": pack_id})
+    db.session.execute(delete_reviews, {"pack_id": pack_id})
     db.session.execute(sql, {"id": pack_id})
     db.session.commit()
 

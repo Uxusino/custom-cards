@@ -27,7 +27,7 @@ h6 {
 }
 
 .menu {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
     padding: 20px;
@@ -95,18 +95,28 @@ h6 {
     align-items: center;
     margin-right: 10px;
     padding: 10px;
-    border-width: thin;
+    border-width: medium;
     border-color: #888;
     font-family: 'Helvetica Neue Bold', sans-serif;
 }
 
+.review {
+    padding: 5px;
+    border-width: thin;
+    border-color: #888;
+}
+
 #white-cards {
     background-color: white;
-    border-width: thin;
+    border-width: medium;
     border-color: #888;
 }
 
 #black-cards {
     color: white;
     background-color: black;
+}
+
+#write-comment {
+    height: 50px;
 }
