@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.sql import text
-from db import db
+from db import db, execute
 
 import users
 
@@ -9,13 +9,14 @@ def new_review(user_id: int, pack_id: int, rating: int, comment: str):
         return
     left_at = datetime.now()
     sql = text("INSERT INTO reviews (user_id, pack_id, rating, comment, time) VALUES (:user_id, :pack_id, :rating, :comment, :time)")
-    db.session.execute(sql, {
+    params = {
         "user_id": user_id,
         "pack_id": pack_id,
         "rating": rating,
         "comment": comment,
         "time": left_at
-    })
+    }
+    execute(query=sql, params=params)
     db.session.commit()
 
 def valid_comment(comment: str) -> bool:
@@ -26,7 +27,7 @@ def valid_comment(comment: str) -> bool:
 # Converts mean to str altogether
 def mean_rating(pack_id: int) -> str:
     sql = text("SELECT COALESCE(SUM(rating)/COUNT(rating), 0) FROM reviews WHERE pack_id=:pack_id")
-    res = db.session.execute(sql, {"pack_id": pack_id})
+    res = execute(sql, {"pack_id": pack_id})
     mean = res.fetchone()[0]
     if mean == 0:
         return "-"
@@ -35,7 +36,7 @@ def mean_rating(pack_id: int) -> str:
     
 def is_author(id: int) -> bool:
     sql = text("SELECT CASE WHEN r.user_id = p.author_id THEN TRUE ELSE FALSE END FROM reviews r, packs p WHERE r.id=:id AND r.pack_id=p.id")
-    res = db.session.execute(sql, {"id": id})
+    res = execute(sql, {"id": id})
     author = res.fetchone()[0]
     if author == 'true':
         return True
@@ -43,12 +44,12 @@ def is_author(id: int) -> bool:
 
 def delete_review(id: int):
     sql = text("DELETE FROM reviews WHERE id=:id")
-    db.session.execute(sql, {"id": id})
+    execute(sql, {"id": id})
     db.session.commit()
 
 def edit_review(id: int, comment: str):
     sql = text("UPDATE reviews SET comment=:comment WHERE id=:id")
-    db.session.execute(sql, {
+    execute(sql, {
         "comment": comment,
         "id": id
     })
@@ -57,7 +58,7 @@ def edit_review(id: int, comment: str):
 # Returns id of author's review, None if there is not
 def review_left(pack_id: int, user_id: int) -> int | None:
     sql = text("SELECT id FROM reviews WHERE pack_id=:pack_id AND user_id=:user_id")
-    res = db.session.execute(sql, {
+    res = execute(sql, {
         "pack_id": pack_id,
         "user_id": user_id
     })
@@ -71,7 +72,7 @@ def review_left(pack_id: int, user_id: int) -> int | None:
 # Tries to place author's own review first.
 def get_all_reviews(pack_id: int) -> list[dict] | None:
     sql = text("SELECT id, user_id, rating, comment, time FROM reviews WHERE pack_id=:pack_id ORDER BY time DESC")
-    res = db.session.execute(sql, {"pack_id": pack_id})
+    res = execute(sql, {"pack_id": pack_id})
     rows = res.fetchall()
     if not rows:
         return None

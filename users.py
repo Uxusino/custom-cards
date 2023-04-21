@@ -1,7 +1,7 @@
 from flask import session, request, abort
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
-from db import db
+from db import db, execute
 
 import secrets
 import string
@@ -22,7 +22,7 @@ def new_user(username: str, password: str) -> tuple:
         return (False, "You can use some special symbols in your username, but not SO special...")
     hash_value = generate_password_hash(password)
     sql = text("INSERT INTO users (username, password, is_admin) VALUES(:username, :password, false)")
-    db.session.execute(sql, {"username": username, "password": hash_value})
+    execute(sql, {"username": username, "password": hash_value})
     db.session.commit()
     login(username, password)
     return (True, None)
@@ -57,7 +57,7 @@ def correct_csrf():
 # Returns user id if user exists, None otherwise
 def get_userid(username: str) -> int:
     sql = text("SELECT id FROM users WHERE lower(username)=:username")
-    res = db.session.execute(sql, {"username": username.lower()})
+    res = execute(sql, {"username": username.lower()})
     id = res.fetchone()
     if not id:
         return None
@@ -65,7 +65,7 @@ def get_userid(username: str) -> int:
 
 def get_username(userid: int) -> str:
     sql = text("SELECT username FROM users WHERE id=:id")
-    res = db.session.execute(sql, {"id": userid})
+    res = execute(sql, {"id": userid})
     username = res.fetchone()
     if not username:
         return None
@@ -73,6 +73,6 @@ def get_username(userid: int) -> str:
 
 def get_hashed_password(userid: int) -> str:
     sql = text("SELECT password FROM users WHERE id=:id")
-    res = db.session.execute(sql, {"id": userid})
+    res = execute(sql, {"id": userid})
     h_password = res.fetchone()[0]
     return h_password

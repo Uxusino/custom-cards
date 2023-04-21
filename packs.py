@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.sql import text
-from db import db
+from db import db, execute
 
 import users
 import re
@@ -21,13 +21,14 @@ def new_pack(userid: int, name: str, language: str, is_public: bool) -> tuple:
     if not language:
         language = "Nevermind"
     sql = text("INSERT INTO packs (author_id, name, language, created, is_public) VALUES (:author_id, :name, :language, :created, :is_public)")
-    db.session.execute(sql, {
+    params = {
         "author_id": userid,
         "name": name,
         "language": language,
         "created": created_at,
         "is_public": is_public
-    })
+    }
+    execute(sql, params)
     db.session.commit()
     id = get_pack_id(userid, name)
     return (True, id)
@@ -37,7 +38,7 @@ def add_white_card(pack_id: int, content: str) -> tuple:
     if not check:
         return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
     sql = text("INSERT INTO white_cards (pack_id, content) VALUES (:pack_id, :content)")
-    db.session.execute(sql, {
+    execute(sql, {
         "pack_id": pack_id,
         "content": content
     })
@@ -56,7 +57,7 @@ def check_black_card(content) -> bool:
 
 def delete_white_card(id: int) -> None:
     sql = text("DELETE FROM white_cards WHERE id=:id")
-    db.session.execute(sql, {
+    execute(sql, {
         "id": id
     })
     db.session.commit()
@@ -66,7 +67,7 @@ def edit_white_card(id: int, new_content: str) -> None:
     if not check:
         return (False, "Card lenght must be at least 1 symbol and at most 50 symbols long.")
     sql = text("UPDATE white_cards SET content=:new_content WHERE id=:id")
-    db.session.execute(sql, {
+    execute(sql, {
         "new_content": new_content,
         "id": id
     })
@@ -92,7 +93,7 @@ def add_black_card(pack_id: int, content: str) -> tuple:
     parse = parse_black_card(content)
     content = parse[0]
     blanks = parse[1]
-    db.session.execute(sql, {
+    execute(sql, {
         "pack_id": pack_id,
         "content": content,
         "blanks": blanks
@@ -102,7 +103,7 @@ def add_black_card(pack_id: int, content: str) -> tuple:
 
 def delete_black_card(id: int) -> None:
     sql = text("DELETE FROM black_cards WHERE id=:id")
-    db.session.execute(sql, {
+    execute(sql, {
         "id": id
     })
     db.session.commit()
@@ -115,7 +116,7 @@ def edit_black_card(id: int, new_content: str) -> None:
     parsed = parse_black_card(new_content)
     new_content = parsed[0]
     blanks = parsed[1]
-    db.session.execute(sql, {
+    execute(sql, {
         "new_content": new_content,
         "blanks": blanks,
         "id": id
@@ -167,7 +168,7 @@ def get_white_cards(pack_id: int) -> list[dict] | None:
 
 def get_black_cards(pack_id: int) -> list[dict] | None:
     sql = text("SELECT id, content FROM black_cards WHERE pack_id=:pack_id ORDER BY id DESC")
-    res = db.session.execute(sql, {"pack_id": pack_id})
+    res = execute(sql, {"pack_id": pack_id})
     if not res:
         return None
     cards = res.fetchall()
@@ -186,17 +187,17 @@ def delete_pack(pack_id: int):
     delete_black_cards = text("DELETE FROM black_cards WHERE pack_id=:pack_id")
     delete_reviews = text("DELETE FROM reviews WHERE pack_id=:pack_id")
     sql = text("DELETE FROM packs WHERE id=:id")
-    db.session.execute(delete_white_cards, {"pack_id": pack_id})
-    db.session.execute(delete_black_cards, {"pack_id": pack_id})
-    db.session.execute(delete_reviews, {"pack_id": pack_id})
-    db.session.execute(sql, {"id": pack_id})
+    execute(delete_white_cards, {"pack_id": pack_id})
+    execute(delete_black_cards, {"pack_id": pack_id})
+    execute(delete_reviews, {"pack_id": pack_id})
+    execute(sql, {"id": pack_id})
     db.session.commit()
 
 ### Functions for editing some values of a pack
 
 def edit_name(pack_id: int, new_name: str):
     sql = text("UPDATE packs SET name=:name WHERE id=:id")
-    db.session.execute(sql, {"name": new_name, "id": pack_id})
+    execute(sql, {"name": new_name, "id": pack_id})
     db.session.commit()
 
 def edit_language(pack_id: int, new_language: str):
@@ -213,7 +214,7 @@ def edit_publicity(pack_id: int, is_public: bool):
 def get_packs(userid: int) -> list[dict] | None:
     author_name = users.get_username(userid)
     sql = text("SELECT id, name, language, created, is_public FROM packs WHERE author_id=:author_id ORDER BY id DESC")
-    res = db.session.execute(sql, {"author_id": userid})
+    res = execute(sql, {"author_id": userid})
     if not res:
         return None
     packs = res.fetchall()
@@ -232,7 +233,7 @@ def get_packs(userid: int) -> list[dict] | None:
 
 def get_pack(pack_id: int) -> dict | None:
     sql = text("SELECT author_id, name, language, created, is_public FROM packs WHERE id=:id")
-    res = db.session.execute(sql, {"id": pack_id})
+    res = execute(sql, {"id": pack_id})
     pack = res.fetchone()
     if not pack:
         return None
@@ -249,7 +250,7 @@ def get_pack(pack_id: int) -> dict | None:
 # Returns id if pack exists, None otherwise
 def get_pack_id(author_id: int, name: str) -> int | None:
     sql = text("SELECT id FROM packs WHERE author_id=:author_id AND name=:name")
-    res = db.session.execute(sql, {"author_id": author_id, "name": name})
+    res = execute(sql, {"author_id": author_id, "name": name})
     id = res.fetchone()
     if not id:
         return None
@@ -257,7 +258,7 @@ def get_pack_id(author_id: int, name: str) -> int | None:
 
 def search_packs(query: str) -> list[dict] | None:
     sql = text("SELECT p.id, p.author_id, p.name, p.language, p.created, p.is_public FROM packs p JOIN users u ON p.author_id=u.id WHERE p.is_public=TRUE AND (p.name ~* :query OR p.language ~* :query OR u.username ~* :query)")
-    res = db.session.execute(sql, {"query": query})
+    res = execute(sql, {"query": query})
     packs = res.fetchall()
     if not packs:
         return None
@@ -277,7 +278,7 @@ def search_packs(query: str) -> list[dict] | None:
 
 def get_owner(pack_id: int) -> int | None:
     sql = text("SELECT u.id FROM users u, packs p WHERE p.id=:id AND p.author_id=u.id")
-    res = db.session.execute(sql, {"id": pack_id})
+    res = execute(sql, {"id": pack_id})
     id = res.fetchone()
     if not id:
         return None
@@ -285,7 +286,7 @@ def get_owner(pack_id: int) -> int | None:
 
 def count_packs(userid: int) -> int:
     sql = text("SELECT COUNT(id) FROM packs WHERE author_id=:author_id")
-    res = db.session.execute(sql, {"author_id": userid})
+    res = execute(sql, {"author_id": userid})
     count = res.fetchone()[0]
     return count
 
