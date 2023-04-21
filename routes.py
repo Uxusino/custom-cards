@@ -241,7 +241,17 @@ def rate_pack():
 
 @app.route("/search")
 def search():
-    return "On this page you will be able to search for packs or other users."
+    return render_template("search.html", packs=None, is_search=False)
+
+@app.route("/search/<string:query>")
+def search_q(query):
+    _packs = packs.search_packs(query)
+    return render_template("search.html", packs=_packs, is_search=True)
+
+@app.route("/find_packs", methods=["POST"])
+def find_packs():
+    query = request.form.get("search")
+    return redirect(f"/search/{query}")
 
 @app.route("/simulator")
 def simulator():

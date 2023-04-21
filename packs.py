@@ -255,6 +255,26 @@ def get_pack_id(author_id: int, name: str) -> int | None:
         return None
     return id[0]
 
+def search_packs(query: str) -> list[dict] | None:
+    sql = text("SELECT p.id, p.author_id, p.name, p.language, p.created, p.is_public FROM packs p JOIN users u ON p.author_id=u.id WHERE p.is_public=TRUE AND (p.name ~* :query OR p.language ~* :query OR u.username ~* :query)")
+    res = db.session.execute(sql, {"query": query})
+    packs = res.fetchall()
+    if not packs:
+        return None
+    packs_list = []
+    for pack in packs:
+        author_name = users.get_username(pack[1])
+        dictionary = {
+            "id": pack[0],
+            "author": author_name,
+            "name": pack[2],
+            "language": pack[3],
+            "created": pack[4],
+            "is_public": pack[5]
+        }
+        packs_list.append(dictionary)
+    return packs_list
+
 def get_owner(pack_id: int) -> int | None:
     sql = text("SELECT u.id FROM users u, packs p WHERE p.id=:id AND p.author_id=u.id")
     res = db.session.execute(sql, {"id": pack_id})
