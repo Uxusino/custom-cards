@@ -41,8 +41,15 @@ textarea {
 
 .pack {
     padding: 10px;
+    margin: 10px;
+    border-style: solid;
     border-color: #888;
     border-width: thin;
+}
+
+.pack-name {
+    font-size: 2em;
+    font-family: 'Helvetica Neue Bold', sans-serif;
 }
 
 .registration {
@@ -93,6 +100,10 @@ textarea {
     overflow-y: auto;
 }
 
+.cards {
+    text-align: center;
+}
+
 .cards-block {
     display: inline-block;
     vertical-align: top;
@@ -104,23 +115,30 @@ textarea {
 .card {
     display: flex;
     align-items: center;
-    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 10px;
-    border-width: medium;
+    border-style: solid;
+    border-width: thin;
     border-color: #888;
     font-family: 'Helvetica Neue Bold', sans-serif;
 }
 
 .review {
     padding: 5px;
+    margin: 10px;
+    border-style: solid;
     border-width: thin;
     border-color: #888;
 }
 
+#authors-review {
+    background-color:#f0dbff;
+    border-color: #763aa1;
+}
+
 #white-cards {
     background-color: white;
-    border-width: medium;
-    border-color: #888;
 }
 
 #black-cards {
@@ -129,5 +147,6 @@ textarea {
 }
 
 #search-bar {
-    width: 90px;
+    width: 300px;
+    box-sizing: border-box;
 }

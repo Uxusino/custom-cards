@@ -82,6 +82,7 @@ def get_all_reviews(pack_id: int) -> list[dict] | None:
         user_id = review[1]
         author = is_author(id)
         username = users.get_username(user_id)
+        time = format_time(review[4])
         dictionary = {
             "id": id,
             "user_id": user_id,
@@ -89,7 +90,7 @@ def get_all_reviews(pack_id: int) -> list[dict] | None:
             "pack_id": pack_id,
             "rating": review[2],
             "comment": review[3],
-            "time": review[4],
+            "time": time,
             "is_author": author
         }
         if author:
@@ -97,3 +98,6 @@ def get_all_reviews(pack_id: int) -> list[dict] | None:
         else:
             reviews_list.append(dictionary)
     return reviews_list
+
+def format_time(time: datetime) -> str:
+    return time.strftime("%H:%M, %d/%m/%Y")

@@ -138,7 +138,7 @@
     {% elif userid != session["userid"] and pack['is_public'] == False %}
         <p>This pack is set as private.</p>
     {% else %}
-        <span id="nameDisplay">{{ pack['name'] }}</span>
+        <span id="nameDisplay" class="pack-name">{{ pack['name'] }}</span>
 
         {% if userid == session["userid"] %}
             <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event, nameDisplay, nameInput, '/edit_name')">
@@ -194,7 +194,7 @@
                     <span>Only registered users can leave reviews.</span>
                 {% elif user_left_review %}
                     <div class="review" id="authors-review">
-                        <span>{{ authors_review['username'] }}</span>
+                        <span title="Author">{{ authors_review['username'] }}&#9733;</span>
                         <br>
                         <span>{{ authors_review['rating'] }}</span>
                         <br>
@@ -225,10 +225,10 @@
                         <p>Nobody has commented on this pack yet.</p>
                     {% else %}
                         {% for review in revs %}
-                            <div class="review" id="review{{ review['id'] }}">
-                                <span>{{ review['username'] }}</span>
+                            <div class="review" id="{{ 'authors-review' if review['is_author'] else 'review' + str(review['id']) }}">
+                                <span title="{{ 'Author' if review['is_author'] }}">{{ review['username'] }}</span>
                                 {% if review['is_author'] %}
-                                    <i>&#9733;</i>
+                                    <span title="Author">&#9733;</span>
                                 {% endif %}
                                 <br>
                                 <span>{{ review['rating'] }}</span>
@@ -265,67 +265,69 @@
                 {% endif %}
             {% endwith %}
         {% endblock %}
-        <div class="cards-block" id="white-cards">
-            <p>White cards:</p>
-            {% if userid == session["userid"] %}
-                <form method="POST" action="/add_white_card">
-                    <input type="text" name="white_card_content" placeholder="Add new white card..." maxlength="50" required>
-                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                    <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                    <button type="submit">Add</button>
-                </form>
-                
-            {% endif %}
-            {% if white_cards %}
-                {% for white_card in white_cards %}
-                    <div class="card" id="white-card">
-                        <a class="card-name" id="whiteCardDisplay{{ white_card['id'] }}">{{ white_card['content'] }}</a>
-                        <input 
-                            type="text" 
-                            id="whiteCardInput{{ white_card['id'] }}" 
-                            style="display:none" 
-                            onkeydown="saveName(event, whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }}, '/edit_white_card', {{ white_card['id'] }})" required>
-                        <button type="button" onclick="editName(whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }})">Edit</button>
+        <div class="cards">
+            <div class="cards-block" id="white-cards">
+                <p>White cards:</p>
+                {% if userid == session["userid"] %}
+                    <form method="POST" action="/add_white_card">
+                        <input type="text" name="white_card_content" placeholder="Add new white card..." maxlength="50" required>
+                        <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                        <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                        <button type="submit">Add</button>
+                    </form>
+                    
+                {% endif %}
+                {% if white_cards %}
+                    {% for white_card in white_cards %}
+                        <div class="card" id="white-card">
+                            <a class="card-name" id="whiteCardDisplay{{ white_card['id'] }}">{{ white_card['content'] }}</a>
+                            <input 
+                                type="text" 
+                                id="whiteCardInput{{ white_card['id'] }}" 
+                                style="display:none" 
+                                onkeydown="saveName(event, whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }}, '/edit_white_card', {{ white_card['id'] }})" required>
+                            <button type="button" onclick="editName(whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }})">Edit</button>
 
-                        <form method="POST" action="/delete_white_card">
-                            <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
-                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="cards-block" id="black-cards">
-            <p>Black cards:</p>
-            {% if userid == session["userid"] %}
-                <form method="POST" action="/add_black_card">
-                    <input type="text" name="black_card_content" placeholder="Add new black card..." maxlength="120" required>
-                    <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                    <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                    <button type="submit">Add</button>
-                </form>
-            {% endif %}
-            {% if black_cards %}
-                {% for black_card in black_cards %}
-                    <div class="card" id="black-card">
-                        <a class="card-name" id="blackCardDisplay{{ black_card['id'] }}">{{ black_card['content'] }}</a>
-                        <input
-                            type="text" 
-                            id="blackCardInput{{ black_card['id'] }}" 
-                            style="display:none" 
-                            onkeydown="saveName(event, blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }}, '/edit_black_card', {{ black_card['id'] }})" required>
-                        <button type="button" onclick="editName(blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }})">Edit</button>
-                        <form method="POST" action="/delete_black_card">
-                            <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
-                            <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
-                            <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                            <button type="submit">Delete</button>
-                        </form>
-                    </div>
-                {% endfor %}
-            {% endif %}
+                            <form method="POST" action="/delete_white_card">
+                                <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
+                                <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                                <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="cards-block" id="black-cards">
+                <p>Black cards:</p>
+                {% if userid == session["userid"] %}
+                    <form method="POST" action="/add_black_card">
+                        <input type="text" name="black_card_content" placeholder="Type _ for a blank." title="Type /_ if you want to include underscore in your card, but not make it a blank." maxlength="120" required>
+                        <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                        <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                        <button type="submit">Add</button>
+                    </form>
+                {% endif %}
+                {% if black_cards %}
+                    {% for black_card in black_cards %}
+                        <div class="card" id="black-card">
+                            <a class="card-name" id="blackCardDisplay{{ black_card['id'] }}">{{ black_card['content'] }}</a>
+                            <input
+                                type="text" 
+                                id="blackCardInput{{ black_card['id'] }}" 
+                                style="display:none" 
+                                onkeydown="saveName(event, blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }}, '/edit_black_card', {{ black_card['id'] }})" required>
+                            <button type="button" onclick="editName(blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }})">Edit</button>
+                            <form method="POST" action="/delete_black_card">
+                                <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
+                                <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
+                                <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
 
     {% endif %}

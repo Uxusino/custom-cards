@@ -19,10 +19,11 @@
                 {% if username != session.username and pack['is_public'] == False %}
                     {# skip #}
                 {% else %}
-                    <div>
-                        <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a>
-                        <p>Language: {{ pack['language'] }}</p>
-                        <p>Created at: {{ pack['created'] }}</p>
+                    <div class="pack">
+                        <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> <br>
+                        <span>Rating: {{ pack['rating'] }}</span> <br>
+                        <span>Language: {{ pack['language'] }}</span> <br>
+                        <i>Created at: {{ pack['created'] }}</i>
                     </div>
                 {% endif %}
             {% endfor %}

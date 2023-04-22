@@ -7,8 +7,30 @@
 <body>
     <h1>Custom Cards Against Humanity!</h1>
     <hr>
-    <p>Have you ever played CAH and thought that the default cards are not enough? Maybe you played so much that you've grown bored of them or would like cards to be themed around your local jokes? 
-        Maybe you want to go as extreme as you can? Either way, this platform allows you to create your very own packs and test them.</p>
+    <h2>What is this site about?</h2>
+    <p>Here you can create your own packs for the party game Cards Against Humanity. Check out the official <a href="https://www.cardsagainsthumanity.com/">page</a>!</p>
+    <h2>What are the rules?</h2>
+    <blockquote cite="https://cdn.sanity.io/files/vc07edlh/production/ddf02ce6c4a0bbebdb737abdf86c00e2795ee1b2.pdf">
+        To start the game, each player draws ten white cards.<br>
+        One player begins as the Card Czar and draws a black card.<br>
+        The Card Czar reads the question or fill-in-the-blank phrase on the black card out loud. Everyone else answers the question or fills in the blank by passing one white card, face down, to the Card Czar.<br>
+        The Card Czar then reads each card combination out loud to the group. The Card Czar should re-read the black card before presenting each answer. Finally, the Card Czar picks the funniest play, and whoever submitted it gets one point.<br>
+        After the round, a new player becomes the Card Czar and everyone draws back up to ten white cards.
+    </blockquote>
+    <hr>
+    <h2>New packs:</h2>
+    <p>This section will contain new public packs.</p>
+    <h3>To be added in future:</h3>
+    <ol>
+        <li>Show new public packs on main page</li>
+        <li>Test your cards in a simulator</li>
+    </ol>
+    <h3>Neat features, that I'd love to add:</h3>
+    <ol>
+        <li>Add default packs for different languages</li>
+        <li>Generating pdf of your pack for you to print</li>
+        <li>Being able to play your packs with your friends</li>
+    </ol>
     <div class="menu">
         {% if session.username %}
             <h2>Welcome, {{session.username}}!</h2>
@@ -43,20 +65,5 @@
             <a href="/register">Sign up</a>
         {% endif %}
     </div>
-
-    <h2>New packs:</h2>
-    <p>This section will contain new public packs.</p>
-    
-    <p>To be added in future:</p>
-    <ol>
-        <li>Show new public packs on main page</li>
-        <li>Test your cards in a simulator</li>
-    </ol>
-    <p>Neat features, that don't have 100% chance of making it:</p>
-    <ol>
-        <li>Add default packs for different languages</li>
-        <li>Generating pdf of your pack for you to print</li>
-        <li>Being able to play your packs with your friends</li>
-    </ol>
 </body>
 </html>

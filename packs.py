@@ -3,6 +3,7 @@ from sqlalchemy.sql import text
 from db import db, execute
 
 import users
+import reviews
 import re
 
 # Returns (True, pack_id: int) if successfull, (False, error: str) otherwise
@@ -220,13 +221,17 @@ def get_packs(userid: int) -> list[dict] | None:
     packs = res.fetchall()
     packs_list = []
     for pack in packs:
+        id = pack[0]
+        rating = reviews.mean_rating(id)
+        created = format_time(pack[3])
         dictionary = {
-            "id": pack[0],
+            "id": id,
             "author": author_name,
             "name": pack[1],
             "language": pack[2],
-            "created": pack[3],
-            "is_public": pack[4]
+            "created": created,
+            "is_public": pack[4],
+            "rating": rating
         }
         packs_list.append(dictionary)
     return packs_list
@@ -238,13 +243,16 @@ def get_pack(pack_id: int) -> dict | None:
     if not pack:
         return None
     author = users.get_username(pack[0])
+    rating = reviews.mean_rating(pack_id)
+    created = format_time(pack[3])
     return {
         "id": pack_id,
         "author": author,
         "name": pack[1],
         "language": pack[2],
-        "created": pack[3],
-        "is_public": pack[4]
+        "created": created,
+        "is_public": pack[4],
+        "rating": rating
     }
 
 # Returns id if pack exists, None otherwise
@@ -265,13 +273,17 @@ def search_packs(query: str) -> list[dict] | None:
     packs_list = []
     for pack in packs:
         author_name = users.get_username(pack[1])
+        created = format_time(pack[4])
+        id = pack[0]
+        rating = reviews.mean_rating(id)
         dictionary = {
-            "id": pack[0],
+            "id": id,
             "author": author_name,
             "name": pack[2],
             "language": pack[3],
-            "created": pack[4],
-            "is_public": pack[5]
+            "created": created,
+            "is_public": pack[5],
+            "rating": rating
         }
         packs_list.append(dictionary)
     return packs_list
@@ -289,6 +301,9 @@ def count_packs(userid: int) -> int:
     res = execute(sql, {"author_id": userid})
     count = res.fetchone()[0]
     return count
+
+def format_time(time: datetime) -> str:
+    return time.strftime("%H:%M, %d/%m/%Y")
 
 # Testing area
 if __name__ == "__main__":
