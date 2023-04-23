@@ -177,11 +177,10 @@ def pack(id):
         i = 0
         for review in revs:
             if review['id'] == user_left_review:
-                authors_review = revs.pop(i)
+                users_review = revs.pop(i)
+                revs.insert(0, users_review)
                 break
             i += 1
-    else:
-        authors_review = None
     return render_template("pack.html",
                            userid=userid,
                            pack=pack,
@@ -192,7 +191,7 @@ def pack(id):
                            revs=revs,
                            mean_rating=mean_rating,
                            user_left_review=user_left_review,
-                           authors_review=authors_review)
+                           )
 
 @app.route("/edit_name", methods=["POST"])
 def edit_name():

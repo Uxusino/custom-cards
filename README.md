@@ -22,6 +22,7 @@ valkoisesta kortista sekoittamalla pakkaa joka kerta.
 - Sovelluksessa on yksinkertainen ulkoasu.
 
 ## Mikä ei ole vielä valmista:
+- Omia kommentteja ei pysty muokkaamaan tai poistamaan.
 - Pelisimulaattoria ei ole.
 - Pääsivulla ei vielä näy uusia julkisia pakkoja.
 - Sovelluksen ulkoasu ei ole viimeistelty ja käyttöliittymä on melko ruma.

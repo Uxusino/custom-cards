@@ -37,10 +37,8 @@ def mean_rating(pack_id: int) -> str:
 def is_author(id: int) -> bool:
     sql = text("SELECT CASE WHEN r.user_id = p.author_id THEN TRUE ELSE FALSE END FROM reviews r, packs p WHERE r.id=:id AND r.pack_id=p.id")
     res = execute(sql, {"id": id})
-    author = res.fetchone()[0]
-    if author == 'true':
-        return True
-    return False
+    isAuthor = res.fetchone()[0]
+    return isAuthor
 
 def delete_review(id: int):
     sql = text("DELETE FROM reviews WHERE id=:id")
