@@ -20,11 +20,11 @@ valkoisesta kortista sekoittamalla pakkaa joka kerta.
 - Käyttäjä voi jättää kommenteja ja arvosteluja toisille pakoille, myös omalle. Kommentien ikkunassa näkyy, jos jokin kommentti on omistajan lisäämä.
 - On yksinkertainen haku, joka etsii pakkoja nimen, omistajan tai kielen perusteella.
 - Sovelluksessa on yksinkertainen ulkoasu.
+- Pääsivulla näkyy kaikki uudet julkaissut pakat.
 
 ## Mikä ei ole vielä valmista:
 - Omia kommentteja ei pysty muokkaamaan tai poistamaan.
 - Pelisimulaattoria ei ole.
-- Pääsivulla ei vielä näy uusia julkisia pakkoja.
 - Sovelluksen ulkoasu ei ole viimeistelty ja käyttöliittymä on melko ruma.
 
 Sovellus on saatavilla [Fly.io:ssa](https://custom-cah.fly.dev)

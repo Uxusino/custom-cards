@@ -4,7 +4,7 @@ from app import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import OperationalError, PendingRollbackError
 
-def execute(query, params, max_retries=3, delay=1):
+def execute(query, params=None, max_retries=3, delay=1):
     for attempt in range(max_retries):
         try:
             result = db.session.execute(query, params)

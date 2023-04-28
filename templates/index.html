@@ -9,7 +9,7 @@
     <hr>
     <h2>What is this site about?</h2>
     <p>Here you can create your own packs for the party game Cards Against Humanity. Check out the official <a href="https://www.cardsagainsthumanity.com/">page</a>!</p>
-    <h2>What are the rules?</h2>
+    <h2>What are the rules of the official game?</h2>
     <blockquote cite="https://cdn.sanity.io/files/vc07edlh/production/ddf02ce6c4a0bbebdb737abdf86c00e2795ee1b2.pdf">
         To start the game, each player draws ten white cards.<br>
         One player begins as the Card Czar and draws a black card.<br>
@@ -19,10 +19,21 @@
     </blockquote>
     <hr>
     <h2>New packs:</h2>
-    <p>This section will contain new public packs.</p>
+        {% if recent_packs %}
+            {% for pack in recent_packs %}
+                <div class="pack">
+                    <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> <br>
+                    <span>Rating: {{ pack['rating'] }}</span> <br>
+                    <span>Language: {{ pack['language'] }}</span> <br>
+                    <i>Created at: {{ pack['created'] }}</i>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>It seems like there is no public packs at all. Be first and create some!</p>
+        {% endif %}
+    <hr>
     <h3>To be added in future:</h3>
     <ol>
-        <li>Show new public packs on main page</li>
         <li>Test your cards in a simulator</li>
     </ol>
     <h3>Neat features, that I'd love to add:</h3>

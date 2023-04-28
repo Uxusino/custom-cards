@@ -7,7 +7,8 @@ import reviews
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    recent_packs = packs.get_recent_packs()
+    return render_template("index.html", recent_packs=recent_packs)
 
 @app.route("/users/<string:username>")
 def user(username):

@@ -24,9 +24,9 @@ def valid_comment(comment: str) -> bool:
         return False
     return True
 
-# Converts mean to str altogether
+# Converts mean value to str altogether
 def mean_rating(pack_id: int) -> str:
-    sql = text("SELECT COALESCE(SUM(rating)/COUNT(rating), 0) FROM reviews WHERE pack_id=:pack_id")
+    sql = text("SELECT COALESCE(ROUND(SUM(rating)::numeric / COUNT(rating), 1), 0) FROM reviews WHERE pack_id=:pack_id")
     res = execute(sql, {"pack_id": pack_id})
     mean = res.fetchone()[0]
     if mean == 0:

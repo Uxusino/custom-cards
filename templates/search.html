@@ -15,9 +15,9 @@
         <div>
             {% for pack in packs %}
                 <div class="pack">
-                    <p><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></p> <br>
-                    <span>Rating: {{ pack['rating'] }}</span>
-                    <span>Language: {{ pack['language'] }}</span> <br>
+                    <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span><br>
+                    <span>Rating: {{ pack['rating'] }}</span><br>
+                    <span>Language: {{ pack['language'] }}</span><br>
                     <i>Created at: {{ pack['created'] }}</i>
                 </div>
             {% endfor %}

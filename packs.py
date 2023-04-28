@@ -154,7 +154,7 @@ def insert_into_black_card(black_content: str, white_content: list[str], blanks:
 
 def get_white_cards(pack_id: int) -> list[dict] | None:
     sql = text("SELECT id, content FROM white_cards WHERE pack_id=:pack_id ORDER BY id DESC")
-    res = db.session.execute(sql, {"pack_id": pack_id})
+    res = execute(sql, {"pack_id": pack_id})
     if not res:
         return None
     cards = res.fetchall()
@@ -203,12 +203,12 @@ def edit_name(pack_id: int, new_name: str):
 
 def edit_language(pack_id: int, new_language: str):
     sql = text("UPDATE packs SET language=:language WHERE id=:id")
-    db.session.execute(sql, {"language": new_language, "id": pack_id})
+    execute(sql, {"language": new_language, "id": pack_id})
     db.session.commit()
 
 def edit_publicity(pack_id: int, is_public: bool):
     sql = text("UPDATE packs SET is_public=:is_public WHERE id=:id")
-    db.session.execute(sql, {"is_public": is_public, "id": pack_id})
+    execute(sql, {"is_public": is_public, "id": pack_id})
     db.session.commit()
 
 # Returns a list of dictionaries containing all packs by an user. Returns None, if this user has no packs
@@ -223,7 +223,7 @@ def get_packs(userid: int) -> list[dict] | None:
     for pack in packs:
         id = pack[0]
         rating = reviews.mean_rating(id)
-        created = format_time(pack[3])
+        created = reviews.format_time(pack[3])
         dictionary = {
             "id": id,
             "author": author_name,
@@ -244,7 +244,7 @@ def get_pack(pack_id: int) -> dict | None:
         return None
     author = users.get_username(pack[0])
     rating = reviews.mean_rating(pack_id)
-    created = format_time(pack[3])
+    created = reviews.format_time(pack[3])
     return {
         "id": pack_id,
         "author": author,
@@ -255,6 +255,31 @@ def get_pack(pack_id: int) -> dict | None:
         "rating": rating
     }
 
+# Gets 20 the most recent packs.
+def get_recent_packs() -> list[dict] | None:
+    sql = text("SELECT id, author_id, name, language, created FROM packs WHERE is_public=TRUE ORDER BY created DESC LIMIT 20")
+    res = execute(sql)
+    packs = res.fetchall()
+    if not packs:
+        return None
+    packs_list = []
+    for pack in packs:
+        id = pack[0]
+        author_name = users.get_username(pack[1])
+        created = reviews.format_time(pack[4])
+        rating = reviews.mean_rating(id)
+        dictionary = {
+            "id": id,
+            "author": author_name,
+            "name": pack[2],
+            "language": pack[3],
+            "created": created,
+            "is_public": True,
+            "rating": rating
+        }
+        packs_list.append(dictionary)
+    return packs_list
+        
 # Returns id if pack exists, None otherwise
 def get_pack_id(author_id: int, name: str) -> int | None:
     sql = text("SELECT id FROM packs WHERE author_id=:author_id AND name=:name")
@@ -273,7 +298,7 @@ def search_packs(query: str) -> list[dict] | None:
     packs_list = []
     for pack in packs:
         author_name = users.get_username(pack[1])
-        created = format_time(pack[4])
+        created = reviews.format_time(pack[4])
         id = pack[0]
         rating = reviews.mean_rating(id)
         dictionary = {
@@ -301,9 +326,6 @@ def count_packs(userid: int) -> int:
     res = execute(sql, {"author_id": userid})
     count = res.fetchone()[0]
     return count
-
-def format_time(time: datetime) -> str:
-    return time.strftime("%H:%M, %d/%m/%Y")
 
 # Testing area
 if __name__ == "__main__":
