@@ -22,7 +22,7 @@
         {% if recent_packs %}
             {% for pack in recent_packs %}
                 <div class="pack">
-                    <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> <br>
+                    <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span> <br>
                     <span>Rating: {{ pack['rating'] }}</span> <br>
                     <span>Language: {{ pack['language'] }}</span> <br>
                     <i>Created at: {{ pack['created'] }}</i>
@@ -31,23 +31,14 @@
         {% else %}
             <p>It seems like there is no public packs at all. Be first and create some!</p>
         {% endif %}
-    <hr>
-    <h3>To be added in future:</h3>
-    <ol>
-        <li>Test your cards in a simulator</li>
-    </ol>
-    <h3>Neat features, that I'd love to add:</h3>
-    <ol>
-        <li>Add default packs for different languages</li>
-        <li>Generating pdf of your pack for you to print</li>
-        <li>Being able to play your packs with your friends</li>
-    </ol>
     <div class="menu">
         {% if session.username %}
             <h2>Welcome, {{session.username}}!</h2>
             <a href="/users/{{session.username}}">My packs</a>
             <br>
             <a href="/search">Search</a>
+            <br>
+            <a href="/simulator">Test</a>
             <br>
             <a href="/logout">Log out</a>
         {% else %}

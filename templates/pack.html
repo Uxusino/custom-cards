@@ -144,7 +144,7 @@
             <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event, nameDisplay, nameInput, '/edit_name')">
             <button id="editNameButton" onclick="editName(nameDisplay, nameInput)">Edit</button>
         {% endif %}
-
+        <p>Contains <b>{{ pack['white_cards'] }}</b> white cards and <b>{{ pack['black_cards'] }}</b> black cards.</p>
         <br>
         <i>{{ pack['author'] }}</i>
         <p>Language: {{ pack['language'] }}</p>
@@ -249,7 +249,10 @@
                     </form>
                 </div>
             </div>
-            
+        {% endif %}
+        {% if pack['white_cards'] >= 10 and pack['black_cards'] >= 1%}
+            <br>
+            <a href="/simulator/{{ pack['id'] }}">Play this pack</a>
         {% endif %}
         {% block content %}
             {% with messages = get_flashed_messages() %}
@@ -331,10 +334,12 @@
 
     {% endif %}
     <div class="menu">
-        {% if not is_guest %}
+        {% if session.username %}
             <a href="/users/{{ session.username }}">My packs</a>
             <br>
             <a href="/search">Search</a>
+            <br>
+            <a href="/simulator">Test</a>
             <br>
             <a href="/logout">Log out</a>
         {% else %}

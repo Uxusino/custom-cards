@@ -21,10 +21,10 @@ valkoisesta kortista sekoittamalla pakkaa joka kerta.
 - On yksinkertainen haku, joka etsii pakkoja nimen, omistajan tai kielen perusteella.
 - Sovelluksessa on yksinkertainen ulkoasu.
 - Pääsivulla näkyy kaikki uudet julkaissut pakat.
+- On yksinkertainen pelisimulaattori, jossa voi testata pakkoja.
 
 ## Mikä ei ole vielä valmista:
 - Omia kommentteja ei pysty muokkaamaan tai poistamaan.
-- Pelisimulaattoria ei ole.
 - Sovelluksen ulkoasu ei ole viimeistelty ja käyttöliittymä on melko ruma.
 
 Sovellus on saatavilla [Fly.io:ssa](https://custom-cah.fly.dev)

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+    <script>
+        var selected = false;
+        var whiteCardsFull = {{ white_cards | tojson | safe }};
+        var blackCardsFull = {{ black_cards | tojson | safe }};
+        var blackCardText = blackCardsFull[0]["content"];
+        var blackCardRaw = blackCardsFull[0]["content-unparsed"];
+        var blackCardBlanks = blackCardsFull[0]["blanks"];
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("black-card-content").innerText = blackCardText;
+            const whiteCards = document.getElementsByClassName('white-card-content');
+            let index = 0;
+            for (const card of whiteCardsFull) {
+                if (index === 10) {
+                    break;
+                }
+                whiteCards[index].innerText = card;
+                index++;
+            }
+        });
+    </script>
+    <script>
+        async function sendChoice(choices) {
+            console.log("Started sending data...");
+            const response = await fetch('/simulator/{{ pack_id }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    blackcardraw: blackCardRaw,
+                    blackcardblanks: blackCardBlanks,
+                    selectedCards: choices
+                })
+            });
+            const responseData = await response.json();
+            const result = responseData.result;
+            if (response && responseData) {
+                document.getElementById("black-card-content").innerText = result;
+            } else {
+                console.error("Response is undefined");
+            }
+        }
+    </script>
+    <script>
+        function updatePage() {
+            const firstBlack = blackCardsFull.shift();
+            blackCardsFull.push(firstBlack);
+            blackCardText = blackCardsFull[0]["content"];
+            blackCardRaw = blackCardsFull[0]["content-unparsed"];
+            blackCardBlanks = blackCardsFull[0]["blanks"];
+            document.getElementById("black-card-content").innerText = blackCardText;
+            const whiteCards = document.getElementsByClassName('white-card-content');
+            const whiteCardsBlock = document.getElementsByClassName('white-card-sim');
+            let index = 0;
+            for (const card of whiteCardsFull) {
+                if (index === 10) {
+                    break;
+                }
+                whiteCards[index].innerText = card;
+                whiteCardsBlock[index].style.backgroundColor = "white";
+                index++;
+            }
+            selected = false;
+        }
+    </script>
+    <script>
+        var selectedCards = [];
+        function onChoice(choice) {
+            selectedCards.push(choice);
+            console.log(selectedCards);
+            console.log(blackCardBlanks);
+            if (selectedCards.length == blackCardBlanks || blackCardBlanks == 0) {
+                console.log("Array length is now equal to blank number");
+                for (var i = 0; i < blackCardBlanks; i++) {
+                    var index = whiteCardsFull.indexOf(selectedCards[i]);
+                    if (index > -1) {
+                        whiteCardsFull.splice(index, 1);
+                        whiteCardsFull.push(selectedCards[i]);
+                    }
+                }
+                console.log("Deleted old cards and moved them in the end. Next we'll send selected cards to the server.");
+                sendChoice(selectedCards);
+                console.log(whiteCardsFull);
+                selectedCards = [];
+                selected = true;
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var whiteCardButtons = document.querySelectorAll('.white-card-sim');
+            whiteCardButtons.forEach(function(card) {
+                card.addEventListener('click', function(event) {
+                    if (!selected) {
+                        event.target.closest('.white-card-sim').style.backgroundColor = "#c9c9c9";
+                        var whiteCardText = event.target.querySelector('.white-card-content').innerText;
+                        onChoice(whiteCardText);
+                    }
+                });
+            });
+        });
+        
+    </script>
+</head>
+<body style="background-color: black;">
+    <div class="simulator-page">
+        <div class="black-card-sim">
+            <p id="black-card-content"></p>
+            <button onclick="updatePage()">Next</button>
+        </div>
+        <div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <br>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+            <div class="white-card-sim">
+                <p class="white-card-content"></p>
+            </div>
+        </div>
+        {% if session.username %}
+            <a href="/users/{{ session.username }}">My packs</a>
+            <br>
+            <a href="/search">Search</a>
+            <br>
+            <a href="/simulator">Test</a>
+            <br>
+            <a href="/logout">Log out</a>
+        {% else %}
+            <a href="/register">Sign up</a>
+            <br>
+            <a href="/search">Search</a>
+        {% endif %}
+        <br>
+        <a href="/">Main page</a>
+    </div>
+</body>
+</html>

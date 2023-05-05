@@ -19,11 +19,8 @@
                 <option value="{{ language }}">{{ language }}</option>
             {% endfor %}
         </select>
-        <p>
-        *Your pack will be...
-        <input type="radio" name="publicity" value="0" required> Private
-        <input type="radio" name="publicity" value="1" required> Public
-        </p>
+        <input type="checkbox" id="publicity" name="publicity" value="true">
+        <label for="publicity">Public pack</label>
         <input type="submit" value="Submit">
         <input type="hidden" name="crsf_token" value="{{ session.crsf_token }}">
     </form>
@@ -43,16 +40,18 @@
             {% endif %}
         {% endwith %}
     {% endblock %}
+    <div class="menu">
+        <a href="/users/{{ session.username }}">My packs</a>
+        <br>
+        <a href="/search">Search</a>
+        <br>
+        <a href="/simulator">Test</a>
+        <br>
+        <a href="/logout">Log out</a>
+        <br>
+        <a href="/">Main page</a>
+    </div>
 </body>
-<div>
-    <a href="/users/{{ session.username }}">My packs</a>
-    <br>
-    <a href="/search">Search</a>
-    <br>
-    <a href="/logout">Log out</a>
-    <br>
-    <a href="/">Main page</a>
-</div>
 </html>
 
 

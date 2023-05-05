@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+</head>
+<body>
+    <h1>Choose a pack to test:</h1>
+    <p>Note that a pack must have at least <b>10</b> white cards and at least <b>1</b> black card to test.</p>
+    {% if not session.userid %}
+     <p><a href="/register">Sign up</a> or <a href="/">log in</a> to test packs.</p>
+    {% elif not packs %}
+        <p>Oops! You don't seem to have any packs to test. You can<a href="/create">create one</a>!</p>
+    {% else %}
+        {% for pack in packs %}
+            {% if pack['white_cards'] >= 10 and pack['black_cards'] >= 1%}
+                <div class="pack">
+                    <a href="/simulator/{{ pack['id'] }}">{{ pack['name'] }}</a> <br>
+                    <span>Rating: {{ pack['rating'] }}</span> <br>
+                    <span>Language: {{ pack['language'] }}</span> <br>
+                    <i>Created at: {{ pack['created'] }}</i>
+                </div>
+            {%endif%}
+        {% endfor %}
+    {% endif %}
+    <div class="menu">
+        {% if session.username %}
+            <a href="/users/{{ session.username }}">My packs</a>
+            <br>
+            <a href="/search">Search</a>
+            <br>
+            <a href="/simulator">Test</a>
+            <br>
+            <a href="/logout">Log out</a>
+        {% else %}
+            <a href="/register">Sign up</a>
+            <br>
+            <a href="/search">Search</a>
+        {% endif %}
+        <br>
+        <a href="/">Main page</a>
+    </div>
+</body>
+</html>

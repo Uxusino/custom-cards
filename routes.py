@@ -1,5 +1,8 @@
 from app import app, languages
-from flask import render_template, request, redirect, flash, session
+from flask import render_template, request, redirect, flash, session, jsonify
+
+import random
+import json
 
 import users
 import packs
@@ -70,11 +73,7 @@ def create():
         userid = session["userid"]
         name = request.form["name"]
         language = request.form["language"]
-        is_public = request.form["publicity"]
-        if is_public == 1:
-            is_public = True
-        elif is_public == 0:
-            is_public = False
+        is_public = request.form.get("publicity") == "true"
         pack = packs.new_pack(userid, name, language, is_public)
         success = pack[0]
         if not success:
@@ -255,4 +254,28 @@ def find_packs():
 
 @app.route("/simulator")
 def simulator():
-    return "This page will contain simulation of CAH, where you can test your cards."
+    _packs = packs.get_packs(session.get("userid"))
+    return render_template("simulator-main.html", packs=_packs)
+
+@app.route("/simulator/<int:id>", methods=["GET", "POST"])
+def simulator_pack(id):
+    if request.method == "POST":
+        data = json.loads(request.data)
+        black_card = data.get("blackcardraw", "")
+        blanks = int(data.get("blackcardblanks", 0))
+        white_cards = data.get("selectedCards", ["error"])
+        result = packs.insert_into_black_card(black_card, white_cards, blanks)
+        response = {
+            "result": result
+        }
+        return jsonify(response)
+    else:
+        pack = packs.get_pack(id)
+        if pack['white_cards'] < 10 or pack['black_cards'] == 0:
+            return redirect("/simulator")
+        if not pack["is_public"] and pack["author"] != session.get("username"):
+            return redirect("/simulator")
+        white_cards = packs.pick_white_cards(id)
+        black_cards = packs.get_black_cards(id)
+        random.shuffle(black_cards)
+        return render_template("simulator.html", black_cards=black_cards, white_cards=white_cards, pack_id=id)

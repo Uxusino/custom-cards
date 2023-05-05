@@ -127,11 +127,12 @@ def edit_black_card(id: int, new_content: str) -> None:
 
 # Inserts words into underscores and lives /_ untouched.
 def insert_into_black_card(black_content: str, white_content: list[str], blanks: int) -> str:
-    if len(white_content) != blanks:
-        return None
     if blanks == 0:
         blanks = 1
-        black_content = black_content + "_"
+        black_content = black_content + " _"
+    if len(white_content) != blanks:
+        return None
+    white_content = [card[:-1] if card[-1] == '.' else card for card in white_content]
     innocent_slashes = re.findall(r"/_+", black_content)
     print(innocent_slashes)
     black_content_temp = re.sub(r"/_+", "[%ACTUALLY-JUST-A-PLACEHOLDER%]", black_content)
@@ -150,6 +151,7 @@ def insert_into_black_card(black_content: str, white_content: list[str], blanks:
         black_content_temp = black_content_list[0]
         for z in range(len(innocent_slashes)):
             black_content_temp += innocent_slashes[z] + black_content_list[z+1]
+    black_content_temp = black_content_temp.replace("/_", "_")
     return black_content_temp
 
 def get_white_cards(pack_id: int) -> list[dict] | None:
@@ -158,17 +160,21 @@ def get_white_cards(pack_id: int) -> list[dict] | None:
     if not res:
         return None
     cards = res.fetchall()
-    cards_list = []
-    for card in cards:
-        dictionary = {
-            "id": card[0],
-            "content": card[1]
-        }
-        cards_list.append(dictionary)
+    cards_list = [{"id": card[0], "content": card[1]} for card in cards]
+    return cards_list
+
+# Pick white cards in random order and returns them as a list of strings
+def pick_white_cards(pack_id: int) -> list[str] | None:
+    sql = text("SELECT content FROM white_cards WHERE pack_id=:pack_id ORDER BY RANDOM()")
+    res = execute(sql, {"pack_id": pack_id})
+    if not res:
+        return None
+    cards = res.fetchall()
+    cards_list = [card[0] for card in cards]
     return cards_list
 
 def get_black_cards(pack_id: int) -> list[dict] | None:
-    sql = text("SELECT id, content FROM black_cards WHERE pack_id=:pack_id ORDER BY id DESC")
+    sql = text("SELECT id, content, blanks FROM black_cards WHERE pack_id=:pack_id ORDER BY id DESC")
     res = execute(sql, {"pack_id": pack_id})
     if not res:
         return None
@@ -177,7 +183,9 @@ def get_black_cards(pack_id: int) -> list[dict] | None:
     for card in cards:
         dictionary = {
             "id": card[0],
-            "content": black_card_display(card[1])
+            "content": black_card_display(card[1]),
+            "content-unparsed": card[1],
+            "blanks": card[2]
         }
         cards_list.append(dictionary)
     return cards_list
@@ -211,6 +219,19 @@ def edit_publicity(pack_id: int, is_public: bool):
     execute(sql, {"is_public": is_public, "id": pack_id})
     db.session.commit()
 
+def pack_dict(id: int, author: str, name: str, language: str, created: str, is_public: bool, rating: str, white_cards: int, black_cards: int) -> dict:
+    return {
+        "id": id,
+        "author": author,
+        "name": name,
+        "language": language,
+        "created": created,
+        "is_public": is_public,
+        "rating": rating,
+        "white_cards": white_cards,
+        "black_cards": black_cards
+    }
+
 # Returns a list of dictionaries containing all packs by an user. Returns None, if this user has no packs
 def get_packs(userid: int) -> list[dict] | None:
     author_name = users.get_username(userid)
@@ -224,15 +245,7 @@ def get_packs(userid: int) -> list[dict] | None:
         id = pack[0]
         rating = reviews.mean_rating(id)
         created = reviews.format_time(pack[3])
-        dictionary = {
-            "id": id,
-            "author": author_name,
-            "name": pack[1],
-            "language": pack[2],
-            "created": created,
-            "is_public": pack[4],
-            "rating": rating
-        }
+        dictionary = pack_dict(id, author_name, pack[1], pack[2], created, pack[4], rating, count_white_cards(id), count_black_cards(id))
         packs_list.append(dictionary)
     return packs_list
 
@@ -245,15 +258,8 @@ def get_pack(pack_id: int) -> dict | None:
     author = users.get_username(pack[0])
     rating = reviews.mean_rating(pack_id)
     created = reviews.format_time(pack[3])
-    return {
-        "id": pack_id,
-        "author": author,
-        "name": pack[1],
-        "language": pack[2],
-        "created": created,
-        "is_public": pack[4],
-        "rating": rating
-    }
+    dictionary = pack_dict(pack_id, author, pack[1], pack[2], created, pack[4], rating, count_white_cards(pack_id), count_black_cards(pack_id))
+    return dictionary
 
 # Gets 20 the most recent packs.
 def get_recent_packs() -> list[dict] | None:
@@ -268,15 +274,7 @@ def get_recent_packs() -> list[dict] | None:
         author_name = users.get_username(pack[1])
         created = reviews.format_time(pack[4])
         rating = reviews.mean_rating(id)
-        dictionary = {
-            "id": id,
-            "author": author_name,
-            "name": pack[2],
-            "language": pack[3],
-            "created": created,
-            "is_public": True,
-            "rating": rating
-        }
+        dictionary = pack_dict(id, author_name, pack[2], pack[3], created, True, rating, count_white_cards(id), count_black_cards(id))
         packs_list.append(dictionary)
     return packs_list
         
@@ -301,15 +299,7 @@ def search_packs(query: str) -> list[dict] | None:
         created = reviews.format_time(pack[4])
         id = pack[0]
         rating = reviews.mean_rating(id)
-        dictionary = {
-            "id": id,
-            "author": author_name,
-            "name": pack[2],
-            "language": pack[3],
-            "created": created,
-            "is_public": pack[5],
-            "rating": rating
-        }
+        dictionary = pack_dict(id, author_name, pack[2], pack[3], created, pack[5], rating, count_white_cards(id), count_black_cards(id))
         packs_list.append(dictionary)
     return packs_list
 
@@ -327,10 +317,22 @@ def count_packs(userid: int) -> int:
     count = res.fetchone()[0]
     return count
 
+def count_white_cards(pack_id: int) -> int:
+    sql = text("SELECT COUNT(id) FROM white_cards WHERE pack_id=:pack_id")
+    res = execute(sql, {"pack_id": pack_id})
+    count = res.fetchone()[0]
+    return count
+
+def count_black_cards(pack_id: int) -> int:
+    sql = text("SELECT COUNT(id) FROM black_cards WHERE pack_id=:pack_id")
+    res = execute(sql, {"pack_id": pack_id})
+    count = res.fetchone()[0]
+    return count
+
 # Testing area
 if __name__ == "__main__":
-    bc = "/_Today I/___will//eat _ with/_ my _ while _"
-    wc = ["apple", "banana", "petting a cat"]
-    blanks = 3
+    bc = "Who's knocking at my door?"
+    wc = ["apple"]
+    blanks = 0
     print(black_card_display(insert_into_black_card(bc, wc, blanks)))
     
