@@ -6,25 +6,27 @@
 </head>
 <body>
     <div>
-        <form action="/find_packs" method="POST">
-            <input id="search-bar" type="text" name="search" maxlength="500" placeholder="Type in pack's name, author or language...">
-            <button type="submit">Search</button>
-        </form>
-    </div>
-    {% if packs %}
         <div>
-            {% for pack in packs %}
-                <div class="pack">
-                    <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span><br>
-                    <span>Rating: {{ pack['rating'] }}</span><br>
-                    <span>Language: {{ pack['language'] }}</span><br>
-                    <i>Created at: {{ pack['created'] }}</i>
-                </div>
-            {% endfor %}
+            <form action="/find_packs" method="POST">
+                <input id="search-bar" type="text" name="search" maxlength="500" placeholder="Type in pack's name, author or language...">
+                <button type="submit">Search</button>
+            </form>
         </div>
-    {% elif is_search %}
-        <p>There are no matching results!</p>
-    {% endif %}
+        {% if packs %}
+            <div>
+                {% for pack in packs %}
+                    <div class="pack">
+                        <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span><br>
+                        <span>Rating: {{ pack['rating'] }}</span><br>
+                        <span>Language: {{ pack['language'] }}</span><br>
+                        <span class="date">{{ pack['created'] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif is_search %}
+            <p>There are no matching results!</p>
+        {% endif %}
+    </div>
     <div class="menu">
         {% if session.username %}
             <a href="/users/{{ session.username }}">My packs</a>

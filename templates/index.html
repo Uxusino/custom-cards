@@ -25,7 +25,7 @@
                     <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span> <br>
                     <span>Rating: {{ pack['rating'] }}</span> <br>
                     <span>Language: {{ pack['language'] }}</span> <br>
-                    <i>Created at: {{ pack['created'] }}</i>
+                    <i class="date">{{ pack['created'] }}</i>
                 </div>
             {% endfor %}
         {% else %}

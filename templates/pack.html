@@ -278,7 +278,7 @@
                 {% if white_cards %}
                     {% for white_card in white_cards %}
                         <div class="card" id="white-card">
-                            <a class="card-name" id="whiteCardDisplay{{ white_card['id'] }}">{{ white_card['content'] }}</a>
+                            <span class="card-name" id="whiteCardDisplay{{ white_card['id'] }}">{{ white_card['content'] }}</span>
                             {% if userid == session.userid %}
                                 <input 
                                     type="text" 
@@ -311,7 +311,7 @@
                 {% if black_cards %}
                     {% for black_card in black_cards %}
                         <div class="card" id="black-card">
-                            <a class="card-name" id="blackCardDisplay{{ black_card['id'] }}">{{ black_card['content'] }}</a>
+                            <span class="card-name" id="blackCardDisplay{{ black_card['id'] }}">{{ black_card['content'] }}</span>
                             {% if userid == session.userid %}
                                 <input
                                     type="text" 

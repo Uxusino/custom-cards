@@ -146,21 +146,23 @@
                 <p class="white-card-content"></p>
             </div>
         </div>
-        {% if session.username %}
-            <a href="/users/{{ session.username }}">My packs</a>
+        <div style="color: white;">
+            {% if session.username %}
+                <a href="/users/{{ session.username }}">My packs</a>
+                <br>
+                <a href="/search">Search</a>
+                <br>
+                <a href="/simulator">Test</a>
+                <br>
+                <a href="/logout">Log out</a>
+            {% else %}
+                <a href="/register">Sign up</a>
+                <br>
+                <a href="/search">Search</a>
+            {% endif %}
             <br>
-            <a href="/search">Search</a>
-            <br>
-            <a href="/simulator">Test</a>
-            <br>
-            <a href="/logout">Log out</a>
-        {% else %}
-            <a href="/register">Sign up</a>
-            <br>
-            <a href="/search">Search</a>
-        {% endif %}
-        <br>
-        <a href="/">Main page</a>
+            <a href="/">Main page</a>
+        </div>
     </div>
 </body>
 </html>
