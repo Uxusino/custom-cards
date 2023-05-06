@@ -1,5 +1,5 @@
 from app import app, languages
-from flask import render_template, request, redirect, flash, session, jsonify
+from flask import render_template, request, redirect, flash, session, jsonify, abort
 
 import random
 import json
@@ -68,7 +68,6 @@ def register():
 @app.route("/create", methods = ["GET", "POST"])
 def create():
     if request.method == "POST":
-        #token = request.form["crsf_token"]
         users.correct_csrf()
         userid = session["userid"]
         name = request.form["name"]
@@ -163,10 +162,6 @@ def pack(id):
         userid = packs.get_owner(id)
     else:
         userid = None
-    if current_userid is not None:
-        is_guest = False
-    else:
-        is_guest = True
     white_cards = packs.get_white_cards(id)
     black_cards = packs.get_black_cards(id)
     revs = reviews.get_all_reviews(id)
@@ -179,18 +174,24 @@ def pack(id):
             if review['id'] == user_left_review:
                 users_review = revs.pop(i)
                 revs.insert(0, users_review)
+                users_review_comment=users_review['comment']
+                users_review_rating=str(users_review['rating'])
                 break
             i += 1
+    else:
+        users_review_comment = None
+        users_review_rating = None
     return render_template("pack.html",
                            userid=userid,
                            pack=pack,
-                           is_guest=is_guest,
                            languages=languages,
                            white_cards=white_cards,
                            black_cards=black_cards,
                            revs=revs,
                            mean_rating=mean_rating,
                            user_left_review=user_left_review,
+                           users_review_comment=users_review_comment,
+                           users_review_rating=users_review_rating
                            )
 
 @app.route("/edit_name", methods=["POST"])
@@ -236,6 +237,28 @@ def rate_pack():
     pack_id = request.form.get("pack_id")
     author_id = request.form.get("author_id")
     reviews.new_review(user_id=author_id, pack_id=pack_id, rating=rating, comment=comment)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/edit_rating", methods=["POST"])
+def edit_rating():
+    users.correct_csrf()
+    comment = request.form.get("comment")
+    rating = request.form.get("rating")
+    pack_id = request.form.get("pack_id")
+    user_id = session.get("userid")
+    if not user_id:
+        abort(403)
+    reviews.edit_review(pack_id, user_id, comment, rating)
+    return redirect(f"/packs/{pack_id}")
+
+@app.route("/delete_rating", methods=["POST"])
+def delete_rating():
+    users.correct_csrf()
+    pack_id = request.form.get("pack_id")
+    user_id = session.get("userid")
+    if not user_id:
+        abort(403)
+    reviews.delete_review(pack_id, user_id)
     return redirect(f"/packs/{pack_id}")
 
 @app.route("/search")

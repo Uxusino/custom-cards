@@ -40,16 +40,22 @@ def is_author(id: int) -> bool:
     isAuthor = res.fetchone()[0]
     return isAuthor
 
-def delete_review(id: int):
-    sql = text("DELETE FROM reviews WHERE id=:id")
-    execute(sql, {"id": id})
+def delete_review(pack_id: int, user_id: int) -> None:
+    sql = text("DELETE FROM reviews WHERE pack_id=:pack_id AND user_id=:user_id")
+    execute(sql, {"pack_id": pack_id, "user_id": user_id})
     db.session.commit()
 
-def edit_review(id: int, comment: str):
-    sql = text("UPDATE reviews SET comment=:comment WHERE id=:id")
+def edit_review(pack_id: int, user_id: int, comment: str, rating: int) -> None:
+    if not valid_comment(comment):
+        return
+    time = datetime.now()
+    sql = text("UPDATE reviews SET comment=:comment, rating=:rating, time=:time WHERE pack_id=:pack_id AND user_id=:user_id")
     execute(sql, {
         "comment": comment,
-        "id": id
+        "rating": rating,
+        "time": time,
+        "pack_id": pack_id,
+        "user_id": user_id
     })
     db.session.commit()
 

@@ -41,17 +41,17 @@ def login(username: str, password: str) -> tuple:
         if check_password_hash(hash_value, password):
             session["userid"] = id
             session["username"] = username
-            session["crsf_token"] = secrets.token_hex(16)
+            session["csrf_token"] = secrets.token_hex(16)
             return (True, None)
     return (False, "Invalid username or password.")
 
 def logout() -> None:
     del session["userid"]
     del session["username"]
-    del session["crsf_token"]
+    del session["csrf_token"]
 
 def correct_csrf():
-    if session.get("crsf_token") != request.form.get("crsf_token"):
+    if session.get("csrf_token") != request.form.get("csrf_token"):
         abort(403)
 
 # Returns user id if user exists, None otherwise
