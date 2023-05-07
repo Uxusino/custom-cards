@@ -149,51 +149,66 @@
 
         {% if userid == session["userid"] %}
             <input type="text" id="nameInput" style="display:none" onkeydown="saveName(event, nameDisplay, nameInput, '/edit_name')">
-            <button id="editNameButton" onclick="editName(nameDisplay, nameInput)">Edit</button>
+            <button id="editNameButton" onclick="editName(nameDisplay, nameInput)" class="icon-button edit-button"><span class="icon">Edit name</span></button>
         {% endif %}
         <p>Contains <b>{{ pack['white_cards'] }}</b> white cards and <b>{{ pack['black_cards'] }}</b> black cards.</p>
-        <br>
-        <i>{{ pack['author'] }}</i>
-        <p>Language: {{ pack['language'] }}</p>
-
+        <p>Made by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></p>
+        <span>Language: {{ pack['language'] }}</span>
         {% if userid == session["userid"] %}
-            <button id="changeLanguage">Change language</button>
+            <button id="changeLanguage" class="icon-button edit-button"><span class="icon">Edit language</span></button>
             <div id="modal-languages" class="modal">
-                <div class="modal-content">
+                <div class="modal-content languages-modal-content">
                     <span id="closeLanguagesModal">&times;</span>
                     <input type="text" id="languageSearch" placeholder="Search for a language...">
                     <div id="languageList" class="language-list"></div>
                 </div>
             </div>
         {% endif %}
-
+        <br>
+        <br>
         {% if pack['is_public'] == True %}
-            <p>This is a public pack.</p>
+            <span>This is a public pack.</span>
             {% if userid == session["userid"] %}
-                <form method="POST" action="/edit_privacy">
+                <form method="POST" action="/edit_privacy" style="display: inline-block;">
                     <input type="hidden" name="privacy" value="false">
                     <input type="hidden" name="id" value="{{ pack['id'] }}">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <button type="submit">Make private</button>
-                    <br>
+                    <button type="submit" class="icon-button swap-button"><span class="icon">Make private</span></button>
                 </form>
             {% endif %}
         {% else %}
-            <p>This is a private pack.</p>
+            <span>This is a private pack.</span>
             {% if userid == session["userid"] %}
-                <form method="POST" action="/edit_privacy">
+                <form method="POST" action="/edit_privacy" style="display: inline-block;">
                     <input type="hidden" name="privacy" value="true">
                     <input type="hidden" name="id" value="{{ pack['id'] }}">
                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                    <button type="submit">Make public</button>
-                    <br>
+                    <button type="submit" class="icon-button swap-button"><span class="icon">Make public</span></button>
                 </form>
             {% endif %}
         {% endif %}
         <br>
-        <p>Rating: {{ mean_rating }}</p>
-        <button id="openReviews">See what other people think!</button>
-        <br>
+        <p>Rating: <b>{{ mean_rating }}</b></p>
+        <div id="threebuttons">
+            <button id="openReviews">See what other people think!</button>
+            {% if userid == session["userid"] %}
+                <button id="deletePack">Delete pack</button>
+                <div id="modal-delete" class="modal">
+                    <div class="modal-content">
+                        <span id="closeDeleteModal">&times;</span>
+                        <span>Are you sure you want to delete this pack?</span>
+                        <form method="POST" action="/delete_pack">
+                            <input type="hidden" name="id" value="{{ pack['id'] }}">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <button type="submit">Yes!</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            {% if pack['white_cards'] >= 10 and pack['black_cards'] >= 1%}
+                <a href="/simulator/{{ pack['id'] }}"><button>Play this pack</button></a>
+            {% endif %}
+        </div>
         <div id="modal-reviews" class="modal">
             <div class="modal-content">
                 <span id="closeReviews">&times;</span>
@@ -211,6 +226,7 @@
                                 <label><input type="radio" name="rating" value="5" {% if users_review_rating == '5' %}checked{% endif %} required>5</label>
                                 <br>
                                 <textarea rows="5" cols="60" name="comment" value="{{ users_review_comment }}" maxlength="1000" id="write-comment"></textarea>
+                                <br>
                                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                 <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                                 <button type="submit" onclick="hideEditComment()">Save</button>
@@ -221,7 +237,6 @@
                             <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                             <button type="submit">Delete comment</button>
                         </form>
-                        
                     </div>
                 {% else %}
                     <p>Leave a review:</p>
@@ -263,33 +278,6 @@
                 </div>
             </div>
         </div>
-        {% if userid == session["userid"] %}
-            <button id="deletePack">Delete pack</button>
-            <div id="modal-delete" class="modal">
-                <div class="modal-content">
-                    <span id="closeDeleteModal">&times;</span>
-                    <span>Are you sure you want to delete this pack?</span>
-                    <form method="POST" action="/delete_pack">
-                        <input type="hidden" name="id" value="{{ pack['id'] }}">
-                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <button type="submit">Yes!</button>
-                    </form>
-                </div>
-            </div>
-        {% endif %}
-        {% if pack['white_cards'] >= 10 and pack['black_cards'] >= 1%}
-            <br>
-            <a href="/simulator/{{ pack['id'] }}">Play this pack</a>
-        {% endif %}
-        {% block content %}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for msg in messages %}
-                        <p>{{msg}}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        {% endblock %}
         <div class="cards">
             <div class="cards-block" id="white-cards">
                 <p>White cards:</p>
@@ -300,7 +288,6 @@
                         <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                         <button type="submit">Add</button>
                     </form>
-                    
                 {% endif %}
                 {% if white_cards %}
                     {% for white_card in white_cards %}
@@ -312,13 +299,13 @@
                                     id="whiteCardInput{{ white_card['id'] }}" 
                                     style="display:none" 
                                     onkeydown="saveName(event, whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }}, '/edit_white_card', {{ white_card['id'] }})" required>
-                                <button type="button" onclick="editName(whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }})">Edit</button>
+                                <button type="button" onclick="editName(whiteCardDisplay{{ white_card['id'] }}, whiteCardInput{{ white_card['id'] }})" class="icon-button edit-button"><span class="icon">Edit</span></button>
 
                                 <form method="POST" action="/delete_white_card">
                                     <input type="hidden" name="white_card_id" value="{{ white_card['id'] }}">
                                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                     <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                                    <button type="submit">Delete</button>
+                                    <button type="submit" class="icon-button delete-button"><span class="icon">Delete</span></button>
                                 </form>
                             {% endif %}
                         </div>
@@ -332,7 +319,7 @@
                         <input type="text" name="black_card_content" placeholder="Type _ for a blank." title="Type /_ if you want to include underscore in your card, but not make it a blank." maxlength="120" required>
                         <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
                         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        <button type="submit">Add</button>
+                        <button type="submit" class="inverse-button">Add</button>
                     </form>
                 {% endif %}
                 {% if black_cards %}
@@ -345,12 +332,14 @@
                                     id="blackCardInput{{ black_card['id'] }}" 
                                     style="display:none" 
                                     onkeydown="saveName(event, blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }}, '/edit_black_card', {{ black_card['id'] }})" required>
-                                <button type="button" onclick="editName(blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }})">Edit</button>
+                                <button type="button" onclick="editName(blackCardDisplay{{ black_card['id'] }}, blackCardInput{{ black_card['id'] }})" class="icon-button edit-button inverse-button">
+                                    <span class="icon">Edit</span>
+                                </button>
                                 <form method="POST" action="/delete_black_card">
                                     <input type="hidden" name="black_card_id" value="{{ black_card['id'] }}">
                                     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                     <input type="hidden" name="pack_id" value="{{ pack['id'] }}">
-                                    <button type="submit">Delete</button>
+                                    <button type="submit" class="icon-button delete-button inverse-button"><span class="icon">Delete</span></button>
                                 </form>
                             {% endif %}
                         </div>
@@ -377,5 +366,26 @@
         <br>
         <a href="/">Main page</a>
     </div>
+    <div id="error-msg">
+    </div>
+    <script>
+    function errorMessage(msg) {
+        var errormsg = document.getElementById("error-msg");
+        errormsg.innerHTML = msg;
+        errormsg.style.display = "block";
+        setTimeout(function () {
+            errormsg.style.display = "none";
+        }, 5000);
+    }
+    </script>
+    <script>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    errorMessage("{{ msg }}");
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
 </body>
 </html>

@@ -7,6 +7,20 @@
 <body>
     <h1>Custom Cards Against Humanity!</h1>
     <hr>
+    <h2>New packs:</h2>
+    {% if recent_packs %}
+        {% for pack in recent_packs %}
+            <div class="pack">
+                <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span> <br>
+                <span>Rating: {{ pack['rating'] }}</span> <br>
+                <span>Language: {{ pack['language'] }}</span> <br>
+                <span class="date">{{ pack['created'] }}</span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>It seems like there is no public packs at all.</p>
+    {% endif %}
+    <hr>
     <h2>What is this site about?</h2>
     <p>Here you can create your own packs for the party game Cards Against Humanity. Check out the official <a href="https://www.cardsagainsthumanity.com/">page</a>!</p>
     <h2>What are the rules of the official game?</h2>
@@ -17,23 +31,10 @@
         The Card Czar then reads each card combination out loud to the group. The Card Czar should re-read the black card before presenting each answer. Finally, the Card Czar picks the funniest play, and whoever submitted it gets one point.<br>
         After the round, a new player becomes the Card Czar and everyone draws back up to ten white cards.
     </blockquote>
-    <hr>
-    <h2>New packs:</h2>
-        {% if recent_packs %}
-            {% for pack in recent_packs %}
-                <div class="pack">
-                    <span><a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> by <a href="/users/{{ pack['author'] }}">{{ pack['author'] }}</a></span> <br>
-                    <span>Rating: {{ pack['rating'] }}</span> <br>
-                    <span>Language: {{ pack['language'] }}</span> <br>
-                    <i class="date">{{ pack['created'] }}</i>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>It seems like there is no public packs at all. Be first and create some!</p>
-        {% endif %}
     <div class="menu">
         {% if session.username %}
-            <h2>Welcome, {{session.username}}!</h2>
+            <span class="welcome">Welcome, {{session.username}}!</span>
+            <br>
             <a href="/users/{{session.username}}">My packs</a>
             <br>
             <a href="/search">Search</a>
@@ -42,24 +43,16 @@
             <br>
             <a href="/logout">Log out</a>
         {% else %}
-            <h2>Welcome!</h2>
+            <span class="welcome">Welcome!</span>
+            <br>
             <form action="/login" method="POST">
-                <label for="username">Username:</label>
-                <input type="text" name="username" placeholder="Username">
+                <label for="username" class="margined-label">Username:</label>
+                <input type="text" name="username" placeholder="Username" class="login">
                 <br>
-                <label for="password">Password:</label>
-                <input type="password" name="password" placeholder="Password">
+                <label for="password" class="margined-label">Password:</label>
+                <input type="password" name="password" placeholder="Password" class="login">
                 <br>
-                <input type="submit" value="Sign in">
-                {% block content %}
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for msg in messages %}
-                                <a class="error-msg">{{msg}}</a>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                {% endblock %}
+                <button type="submit">Sign in</button>
             </form>
             <br>
             <a href="/search">Search</a>
@@ -67,5 +60,26 @@
             <a href="/register">Sign up</a>
         {% endif %}
     </div>
+    <div id="error-msg">
+    </div>
+    <script>
+    function errorMessage(msg) {
+        var errormsg = document.getElementById("error-msg");
+        errormsg.innerHTML = msg;
+        errormsg.style.display = "block";
+        setTimeout(function () {
+            errormsg.style.display = "none";
+        }, 5000);
+    }
+    </script>
+    <script>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    errorMessage("{{ msg }}");
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
 </body>
 </html>

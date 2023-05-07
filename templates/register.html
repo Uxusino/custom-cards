@@ -7,23 +7,35 @@
 <body>
     <div class="registration">
         <h1>Sign Up</h1>
-        <form method="POST">
+        <form method="POST" id="registration-box">
             Username: <input type="text" name="username" placeholder="Username">
             <br>
             Password: <input type="password" name="password" placeholder="Password">
             <br>
-            <input type="submit" value="Submit">
+            <button type="submit">Submit</button>
         </form>
-        {% block content %}
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for msg in messages %}
-                        <p>{{msg}}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        {% endblock %}
         <p>Already have an account? Sign in on the <a href="/">main page</a></p>
     </div>
+    <div id="error-msg">
+    </div>
+    <script>
+        function errorMessage(msg) {
+            var errormsg = document.getElementById("error-msg");
+            errormsg.innerHTML = msg;
+            errormsg.style.display = "block";
+            setTimeout(function () {
+                errormsg.style.display = "none";
+            }, 5000);
+        }
+    </script>
+    <script>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    errorMessage("{{ msg }}");
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
 </body>
 </html>

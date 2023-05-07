@@ -17,14 +17,13 @@ valkoisesta kortista sekoittamalla pakkaa joka kerta.
 - Pakat tallennetaan tietokantaan ja näytetään sitten profiilissa. Julkiset pakat ovat kaikkien nähtävissä, kun taas yksityiset pakat näkyvät vain omistajalle.
 - On mahdollista siirtyä pakan sivulle, jossa näkyy tietoja siitä. Käyttäjä voi luoda valkoisia tai mustia kortteja pakassaan.
 - Käyttäjä voi muokata pakan tiedot tai poistaa sitä kokonaan. Sen lisäksi on mahdollista muokata tai poistaa kortteja.
-- Käyttäjä voi jättää kommenteja ja arvosteluja toisille pakoille, myös omalle. Kommentien ikkunassa näkyy, jos jokin kommentti on omistajan lisäämä.
+- Käyttäjä voi jättää arvosteluja toisille pakoille, myös omalle. Kommenttien ikkunassa näkyy, jos jokin kommentti on omistajan lisäämä. Omia kommentteja pystyy muokkaamaan tai poistamaan.
 - On yksinkertainen haku, joka etsii pakkoja nimen, omistajan tai kielen perusteella.
 - Sovelluksessa on yksinkertainen ulkoasu.
 - Pääsivulla näkyy kaikki uudet julkaissut pakat.
 - On yksinkertainen pelisimulaattori, jossa voi testata pakkoja.
 
 ## Mikä ei ole vielä valmista:
-- Omia kommentteja ei pysty muokkaamaan tai poistamaan.
 - Sovelluksen ulkoasu ei ole viimeistelty ja käyttöliittymä on melko ruma.
 
 Sovellus on saatavilla [Fly.io:ssa](https://custom-cah.fly.dev)

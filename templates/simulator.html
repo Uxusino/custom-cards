@@ -111,7 +111,7 @@
     <div class="simulator-page">
         <div class="black-card-sim">
             <p id="black-card-content"></p>
-            <button onclick="updatePage()">Next</button>
+            <button onclick="updatePage()" class="inverse-button" style="font-size: 0.90em; margin-bottom: 10px;">Next</button>
         </div>
         <div>
             <div class="white-card-sim">
@@ -146,22 +146,22 @@
                 <p class="white-card-content"></p>
             </div>
         </div>
-        <div style="color: white;">
+        <div>
             {% if session.username %}
-                <a href="/users/{{ session.username }}">My packs</a>
+                <a href="/users/{{ session.username }}" style="color: white;">My packs</a>
                 <br>
-                <a href="/search">Search</a>
+                <a href="/search" style="color: white;">Search</a>
                 <br>
-                <a href="/simulator">Test</a>
+                <a href="/simulator" style="color: white;">Test</a>
                 <br>
-                <a href="/logout">Log out</a>
+                <a href="/logout" style="color: white;">Log out</a>
             {% else %}
-                <a href="/register">Sign up</a>
+                <a href="/register" style="color: white;">Sign up</a>
                 <br>
-                <a href="/search">Search</a>
+                <a href="/search" style="color: white;">Search</a>
             {% endif %}
             <br>
-            <a href="/">Main page</a>
+            <a href="/" style="color: white;">Main page</a>
         </div>
     </div>
 </body>

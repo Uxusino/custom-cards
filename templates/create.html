@@ -11,35 +11,30 @@
     </script>
 </head>
 <body>
-    <form method="POST">
-        Name: <input type="text" name="name" placeholder="Name of your pack">
-        <br>
-        Language: <select name="language" class="form-control select2">
-            {% for language in languages %}
-                <option value="{{ language }}">{{ language }}</option>
-            {% endfor %}
-        </select>
-        <input type="checkbox" id="publicity" name="publicity" value="true">
-        <label for="publicity">Public pack</label>
-        <input type="submit" value="Submit">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('select').select2();
-        });
-    </script>
-    {% block content %}
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p>{{msg}}</p>
+    <div class="create-block">
+        <form method="POST">
+            Name: <input type="text" name="name" placeholder="Name of your pack">
+            <br>
+            Language: <select name="language" class="form-control select2">
+                {% for language in languages %}
+                    <option value="{{ language }}">{{ language }}</option>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
-    {% endblock %}
+            </select>
+            <br>
+            <input type="checkbox" id="publicity" name="publicity" value="true">
+            <label for="publicity">Public pack</label>
+            <br>      
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <button type="submit">Submit</button>
+        </form>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('select').select2();
+            });
+        </script>
+    </div>
     <div class="menu">
         <a href="/users/{{ session.username }}">My packs</a>
         <br>
@@ -51,6 +46,27 @@
         <br>
         <a href="/">Main page</a>
     </div>
+    <div id="error-msg">
+    </div>
+    <script>
+        function errorMessage(msg) {
+            var errormsg = document.getElementById("error-msg");
+            errormsg.innerHTML = msg;
+            errormsg.style.display = "block";
+            setTimeout(function () {
+                errormsg.style.display = "none";
+            }, 5000);
+        }
+    </script>
+    <script>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    errorMessage("{{ msg }}");
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </script>
 </body>
 </html>
 

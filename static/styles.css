@@ -29,6 +29,7 @@ h6 {
 textarea {
     padding: 5px;
     overflow: auto;
+    resize: none;
 }
 
 a {
@@ -40,12 +41,52 @@ a:visited {
     color: black;
 }
 
+input[type="text"],
+input[type="password"] {
+    font-family: 'Helvetica Neue Bold', sans-serif;
+    background-color: #cacaca;
+    color: #414141;
+    border-color: #cacaca;
+    border-style: solid;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: white;
+    color: black;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: 2px;
+    border-color: #000;
+    padding: 5px;
+    font-family: 'Helvetica Neue Bold', sans-serif;
+}
+
+button:hover {
+    background-color: black;
+    color: white;
+    box-shadow: 0 0 5px #000;
+}
+
+.login {
+    display: flex;
+    flex-direction: column;
+}
+
+.margined-label {
+    margin-bottom: 10px;
+}
+
 .menu {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 20px;
+    right: 25px;
     padding: 20px;
-    margin-right: 20px;
+    width: 272px;
 }
 
 .pack {
@@ -77,10 +118,6 @@ a:visited {
     text-align: center;
 }
 
-.error-msg {
-    color: #a60d0d;
-}
-
 .modal {
     display: none;
     position: fixed;
@@ -100,6 +137,10 @@ a:visited {
     padding: 20px;
     border: 1px solid #888;
     width: 40%;
+}
+
+.languages-modal-content {
+    width: 300px;
 }
 
 .closeModal {
@@ -182,6 +223,99 @@ a:visited {
     text-align: center;
 }
 
+.welcome {
+    font-family: 'Helvetica Neue Bold', sans-serif;
+    font-size: 2em;
+}
+
+.icon-button {
+    text-indent: -9999px;
+    border: none;
+    width: 24px;
+    height: 24px;
+    background-size: 24px 24px;
+}
+
+.icon {
+    display: block;
+    width: 50%;
+    height: 50%;
+}
+
+.edit-button {
+    background: url("cah-edit.png") no-repeat center center; 
+}
+
+.delete-button {
+    background: url("cah-delete.png") no-repeat center center;
+}
+
+.swap-button {
+    background: url("cah-swap.png") no-repeat center center;
+}
+
+.add-button {
+    background: url("cah-add.png") no-repeat center center;
+}
+
+.inverse-button {
+    background-color: black;
+    color: white;
+}
+
+.inverse-button:hover {
+    background-color: white;
+    border-color: white;
+    color: black;
+    box-shadow: 0 0 5px rgb(255, 255, 255);
+}
+
+.language-item {
+    font-family: 'Helvetica Neue Bold', sans-serif;
+    text-align: center;
+    margin: 5px;
+}
+
+.language-item:hover {
+    background-color: #000;
+    color: white;
+}
+
+.create-block {
+    margin: auto;
+    width: 600px;
+    text-align: center;
+    line-height: 2;
+}
+
+#registration-box {
+    margin: auto;
+    width: 300px;
+}
+
+#threebuttons {
+    width: 400px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+#error-msg {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    max-width: 272px;
+    padding: 30px;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: thin;
+    border-color: rgb(196, 74, 74);
+    background-color: #ffbdb9;
+    color:rgb(196, 74, 74);
+    font-family: 'Helvetica Neue Bold', sans-serif;
+    display: none;
+}
+
 #authors-review {
     background-color:#f0dbff;
     border-color: #763aa1;
@@ -200,3 +334,4 @@ a:visited {
     width: 600px;
     box-sizing: border-box;
 }
+

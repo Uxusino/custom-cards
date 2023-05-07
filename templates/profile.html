@@ -7,13 +7,13 @@
 <body>
     {% if user %}
         <h1>{{ username }}</h1>
-        <p>Created {{ pack_count }} packs</p>
+        <p>Created <b>{{ pack_count }}</b> packs</p>
         {% if username == session.username %}
             <a href="/create">New pack</a>
             <br>
         {% endif %}
         {% if not packs %}
-            <i>It is empty here...</i>
+            <p>It is empty here...</p>
         {% else %}
             {% for pack in packs %}
                 {% if username != session.username and pack['is_public'] == False %}
@@ -23,7 +23,7 @@
                         <a href="/packs/{{ pack['id'] }}">{{ pack['name'] }}</a> <br>
                         <span>Rating: {{ pack['rating'] }}</span> <br>
                         <span>Language: {{ pack['language'] }}</span> <br>
-                        <i class="date">{{ pack['created'] }}</i>
+                        <span class="date">{{ pack['created'] }}</span>
                     </div>
                 {% endif %}
             {% endfor %}

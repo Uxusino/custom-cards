@@ -125,7 +125,7 @@ def edit_black_card(id: int, new_content: str) -> None:
     db.session.commit()
     return (True, None)
 
-# Inserts words into underscores and lives /_ untouched.
+# Inserts words into underscores and leaves /_ untouched.
 def insert_into_black_card(black_content: str, white_content: list[str], blanks: int) -> str:
     if blanks == 0:
         blanks = 1
