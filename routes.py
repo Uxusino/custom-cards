@@ -42,6 +42,8 @@ def login():
 
 @app.route("/logout")
 def logout():
+    if not session.get("userid"):
+        return redirect("/")
     users.logout()
     return redirect("/")
 
