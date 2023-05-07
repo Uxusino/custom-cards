@@ -1,5 +1,9 @@
 # Custom CAH
 
+## Tärkeää
+Jos olet kirjautunut sisään ennen ja kohtaat paljon virheitä, poista evästeet ja kirjaudu uudelleen. Eräs session parametrin nimi on muuttunut painovirheen takia ja session tyhjentäminen korjaa virheet.
+
+## Projektin kuvaus
 Sovelluksen tavoitteena on luoda alusta, jolla käyttäjät voivat luoda räätälöityjä kortteja Cards Against Humanity -peliin.
 Sovelluksen toiminnallisuuteen tulisi kuulua mahdollisuus rekisteröityä ja kirjautua sisään, luoda omia korttipakkoja ja lisätä sinne kortteja.
 Luodessaan pakkaa käyttäjän on määritettävä nimi, kieli ja yksityisyysasetukset. Yksityiset pakat eivät ole muiden kuin käyttäjän nähtävissä,
@@ -22,8 +26,5 @@ valkoisesta kortista sekoittamalla pakkaa joka kerta.
 - Sovelluksessa on yksinkertainen ulkoasu.
 - Pääsivulla näkyy kaikki uudet julkaissut pakat.
 - On yksinkertainen pelisimulaattori, jossa voi testata pakkoja.
-
-## Mikä ei ole vielä valmista:
-- Sovelluksen ulkoasu ei ole viimeistelty ja käyttöliittymä on melko ruma.
 
 Sovellus on saatavilla [Fly.io:ssa](https://custom-cah.fly.dev)
